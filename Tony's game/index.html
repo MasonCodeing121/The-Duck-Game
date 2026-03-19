@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Duck Game</title>
+  <style>
+    html, body { margin: 0; padding: 0; background: #333; }
+    body { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+    canvas { display: block; box-shadow: 0 0 32px #2228; border-radius: 18px; background: #7B56F5; }
+    .fullscreen-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 18px 0 0 0;
+      padding: 10px 26px;
+      font-family: 'Courier', monospace;
+      font-size: 1.2em;
+      background: linear-gradient(90deg, #8465f7 0%, #6240ea 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px #2224;
+      cursor: pointer;
+      transition: background 0.18s, transform 0.13s;
+      outline: none;
+      gap: 8px;
+      user-select: none;
+    }
+    .fullscreen-btn:hover, .fullscreen-btn:focus {
+      background: linear-gradient(90deg, #6240ea 0%, #8465f7 100%);
+      transform: scale(1.045);
+      box-shadow: 0 6px 22px #2226;
+    }
+    h3 { color: white; margin-top: 10px; user-select: none; }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+  <button id="fullscreenBtn" class="fullscreen-btn" title="Play in fullscreen">
+    <svg width="22" height="22" viewBox="0 0 22 22" style="margin-right:4px;vertical-align:middle" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2.5" y="2.5" width="6" height="2" rx="1" fill="#fff"></rect>
+      <rect x="2.5" y="2.5" width="2" height="6" rx="1" fill="#fff"></rect>
+      <rect x="13.5" y="2.5" width="6" height="2" rx="1" fill="#fff"></rect>
+      <rect x="17.5" y="2.5" width="2" height="6" rx="1" fill="#fff"></rect>
+      <rect x="2.5" y="17.5" width="6" height="2" rx="1" fill="#fff"></rect>
+      <rect x="2.5" y="13.5" width="2" height="6" rx="1" fill="#fff"></rect>
+      <rect x="13.5" y="17.5" width="6" height="2" rx="1" fill="#fff"></rect>
+      <rect x="17.5" y="13.5" width="2" height="6" rx="1" fill="#fff"></rect>
+    </svg>
+    Fullscreen
+  </button>
+  <h3>Made by ToeKnee and Formatted for HTML5/Webview by 8BitCAP -
+  Pretty simple game, collect pancakes, feed the carrot, have fun.
+  (It's Spacebar to Dash)</h3>
+  <script src="sketch.js"></script>
+  <script>
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+      const c = document.getElementById('gameCanvas');
+      if (c.requestFullscreen) c.requestFullscreen();
+      else if (c.webkitRequestFullscreen) c.webkitRequestFullscreen();
+    });
+    document.oncontextmenu = () => true;
+  </script>
+</body>
+</html>
