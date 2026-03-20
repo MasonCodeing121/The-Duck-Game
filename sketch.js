@@ -607,7 +607,7 @@ function game() {
   drawLeaves(99,44,null); drawLeaves(141,-17,1.3); drawLeaves(248,56,1.2); drawLeaves(251,14,null);
   tree(); treehouse();
   push(); translate(616,222); house(0,-18); door(87,358); windoww(-16,302); pop();
-  textSize(30); textFont("Courier"); fill(0); noStroke();
+  textSize(30); textFont("Courier"); fill(153, 153, 153); noStroke();
   text("Welcome to The Duck Game!",-173,240);
   serve_pancakes(20,"front");
 
@@ -661,11 +661,11 @@ function menu() {
   textSize(50); fill(0); text("The",150,46); fill(255); text("The",150,48);
   textSize(103); fill(0); text("Duck",150,98); fill(255); text("Duck",150,100);
   fill(0); text("Game",150,168); fill(255); text("Game",150,170);
-  textSize(190); fill(0); text("🦆",350,118); fill(255); text("🦆",350,120);
+  textSize(190); text("🦆",350,120);
   textSize(20); fill(0); text("click duck to start",147,224); fill(255); text("click duck to start",147,226);
   textSize(25);
-  fill(0);   text("HTML/CSS by Pear256",101,581); text("by ƬӨΣKПΣΣ",101,571);
-  fill(255); text("HTML/CSS by Pear256",101,583); text("by ƬӨΣKПΣΣ",101,573);
+  fill(0);   text("HTML/CSS by Pear256",110,561); text("by ƬӨΣKПΣΣ",101,571);
+  fill(255); text("HTML/CSS by Pear256",110,563); text("by ƬӨΣKПΣΣ",101,573);
   push(); translate(310,301); rotate(-34);
   if (dist(mouseX,mouseY,310,301) < 35) {
     scale(1.2);
@@ -698,13 +698,17 @@ function how() {
     if (clicked && scene===scene2b) { intro_timer=110; scene2b="menu"; }
   }
   textSize(35); fill(0); text("Menu",0,-2); fill(255); text("Menu",0,0);
-  textSize(120); fill(255); text("⇦",-5,4);
+  textSize(125); fill(255); text("⇦",-5,4);
   pop();
   textSize(50); fill(255); text("how?",300,44);
-  textSize(27); fill(255);
-  text("1. Be duck\n\n2. Collect pancakes,\n3. Feed said pancakes to carrot,\n4. Watch carrot\ngrow\n5. Repeat\n\n[W]\n[A][S][D]\nto move\n\n[space] to sprint",300,329);
+  textSize(27); fill(0);
+  text("1. Be duck\n\n2. Collect pancakes,\n3. Feed said pancakes to carrot,\n4. Watch carrot\ngrow\n5. Repeat\n\n[W]\n[A][S][D]\nto move\n\n[space] to sprint",300,190);
+  fill(255);
+  text("1. Be duck\n\n2. Collect pancakes,\n3. Feed said pancakes to carrot,\n4. Watch carrot\ngrow\n5. Repeat\n\n[W]\n[A][S][D]\nto move\n\n[space] to sprint",300,190);
+  fill(0);
+  text("the following steps are optional:",308,248);
   fill(255); textSize(15);
-  text("the following steps are optional:",308,190);
+  text("the following steps are optional:",308,250);
 }
 
 function draw() {
