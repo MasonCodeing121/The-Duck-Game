@@ -7,7 +7,8 @@ ctx.lineCap  = 'round';
 ctx.lineJoin = 'round';
 
 // ─── Multiplayer ─────────────────────────────────────────────────────────────
-const SERVER_URL = 'https://cutter-rpg-server.onrender.com';
+// UPDATED: Now points to your specific server URL
+const SERVER_URL = 'https://server-5jkd.onrender.com/';
 const socket     = io(SERVER_URL);
 
 let mySocketId   = null;
@@ -20,24 +21,34 @@ const roomOverlay = document.getElementById('room-overlay');
 
 socket.on('connect', () => {
   mySocketId = socket.id;
-  netStatus.textContent = 'online';
-  netStatus.className   = 'connected';
+  if(netStatus) {
+    netStatus.textContent = 'online';
+    netStatus.className   = 'connected';
+  }
 });
 socket.on('disconnect', () => {
-  netStatus.textContent = 'offline';
-  netStatus.className   = 'error';
+  if(netStatus) {
+    netStatus.textContent = 'offline';
+    netStatus.className   = 'error';
+  }
 });
-socket.on('connect_error', () => {
-  netStatus.textContent = 'server unreachable';
-  netStatus.className   = 'error';
+
+// UPDATED: Your server.js emits 'game:event' and 'admin-update', but for 
+// the game client, we listen for 'game:event' to update other players.
+socket.on('game:event', (data) => {
+    if (data.senderId !== socket.id) {
+        otherPlayers[data.senderId] = data.payload;
+    }
 });
-socket.on('update-players', (players) => {
-  otherPlayers = players;
+
+socket.on('room:player_left', (data) => {
+    delete otherPlayers[data.player.id];
 });
 
 function joinRoom(name) {
   currentRoom = name;
-  socket.emit('join-room', name);
+  // UPDATED: Matches the 'room:join' listener in your server.js
+  socket.emit('room:join', { roomId: name, playerName: "Duck" });
 }
 
 // Emit local player state to server (called each frame while in game)
@@ -46,29 +57,34 @@ function emitMove() {
   if (!currentRoom) return;
   _emitTick++;
   if (_emitTick % 3 !== 0) return;
-  socket.emit('move', {
-    x: ducks.x, y: ducks.y, d: ducks.d,
-    r1: ducks.r1, r2: ducks.r2, r3: ducks.r3,
-    r4: ducks.r4, r5: ducks.r5, r6: ducks.r6,
-    walking: ducks.walking
+
+  // UPDATED: Wrapped in "payload" to match your server.js logic
+  socket.emit('game:event', {
+    roomId: currentRoom,
+    payload: {
+        x: ducks.x, y: ducks.y, d: ducks.d,
+        r1: ducks.r1, r2: ducks.r2, r3: ducks.r3,
+        r4: ducks.r4, r5: ducks.r5, r6: ducks.r6,
+        walking: ducks.walking
+    }
   });
 }
 
 // ─── Math Helpers (p5 uses degrees by default) ───────────────────────────────
 const DEG = Math.PI / 180;
-function sin(d)            { return Math.sin(d * DEG); }
-function cos(d)            { return Math.cos(d * DEG); }
-function atan2(y, x)       { return Math.atan2(y, x) / DEG; }
+function sin(d)               { return Math.sin(d * DEG); }
+function cos(d)               { return Math.cos(d * DEG); }
+function atan2(y, x)          { return Math.atan2(y, x) / DEG; }
 function dist(x1,y1,x2,y2){ return Math.sqrt((x2-x1)**2+(y2-y1)**2); }
-function lerp(a, b, t)     { return a + (b - a) * t; }
-function random(a, b)      { return b === undefined ? Math.random()*a : Math.random()*(b-a)+a; }
-function round(n)          { return Math.round(n); }
+function lerp(a, b, t)        { return a + (b - a) * t; }
+function random(a, b)       { return b === undefined ? Math.random()*a : Math.random()*(b-a)+a; }
+function round(n)             { return Math.round(n); }
 
 // ─── Drawing State ────────────────────────────────────────────────────────────
 let _fill      = [0, 0, 0];
 let _stroke    = [0, 0, 0];
 let _lineWidth = 1;
-let _doFill    = true;
+let _doFill      = true;
 let _doStroke  = true;
 let _textSize  = 12;
 let _textFont  = 'sans-serif';
@@ -247,8 +263,8 @@ function duck(x, y) {
   stroke(247,180,37); strokeWeight(13);
   line(ducks.r1*24, -16+ducks.r2*9, ducks.r1*25, -16+ducks.r2*10);
   if (ducks.d % 360) {
-    strokeWeight(11 + ducks.r5*11);
-    if (ducks.r5*11 > 2) { stroke(255); } else { noStroke(); }
+    weight = 11 + ducks.r5*11;
+    if (weight > 2) { stroke(255); strokeWeight(weight); } else { noStroke(); }
     line(ducks.r1*10, ducks.r2*5, ducks.r1*10, -20+ducks.r2*5);
   }
   pop();
@@ -282,15 +298,6 @@ function drawOtherDuck(x, y, p, label) {
   text(label, 0, 0);
   pop();
   pop();
-}
-
-// Render all remote players at their world positions
-function renderOtherPlayers() {
-  for (const [id, p] of Object.entries(otherPlayers)) {
-    if (id === mySocketId) continue;
-    const shortId = id.slice(0, 6);
-    drawOtherDuck(p.x, p.y, p, shortId);
-  }
 }
 
 function blocked(x, y) {
@@ -469,7 +476,7 @@ var door = function(x,y) {
   fill(133,53,0);  rect(175,285,50,80,5);
   fill(0,200,255); rect(176,266,30,26,5);
   fill(0,30);      rect(162,285,25,80,5);
-  fill(0);         rect(181,327,10,5,5);
+  fill(0);          rect(181,327,10,5,5);
   pop();
 };
 
@@ -657,8 +664,8 @@ function menu() {
   textSize(190); fill(0); text("🦆",350,118); fill(255); text("🦆",350,120);
   textSize(20); fill(0); text("click duck to start",147,224); fill(255); text("click duck to start",147,226);
   textSize(25);
-  fill(0);   text("HTML/CSS by 8bitCAP",101,581); text("by ƬӨΣKПΣΣ",101,571);
-  fill(255); text("HTML/CSS by 8bitCAP",101,583); text("by ƬӨΣKПΣΣ",101,573);
+  fill(0);   text("HTML/CSS by Pear256",101,581); text("by ƬӨΣKПΣΣ",101,571);
+  fill(255); text("HTML/CSS by Pear256",101,583); text("by ƬӨΣKПΣΣ",101,573);
   push(); translate(310,301); rotate(-34);
   if (dist(mouseX,mouseY,310,301) < 35) {
     scale(1.2);
@@ -726,12 +733,12 @@ function draw() {
       // When entering the game, join the room
       if (scene === "game") {
         const roomName = roomInput.value.trim() || 'duck-game';
-        roomOverlay.style.display = 'none';
+        if (roomOverlay) roomOverlay.style.display = 'none';
         joinRoom(roomName);
       }
       // Show overlay again if going back to menu
       if (scene === "menu") {
-        roomOverlay.style.display = 'flex';
+        if (roomOverlay) roomOverlay.style.display = 'flex';
       }
     }
   }
