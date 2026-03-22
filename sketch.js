@@ -569,7 +569,7 @@ var intro_timer = 1000;
 var scene2b     = "menu";
 function treeScene() {
   background(120, 85, 60); // cozy wood color
-
+duck(ducks.x, ducks.y);
   textSize(40);
   fill(255);
   text("Inside the Treehouse", 300, 80);
