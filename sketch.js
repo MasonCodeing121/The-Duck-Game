@@ -589,7 +589,7 @@ function game() {
   shake_time--;
   push();
   translate(cam.x+300+shake, cam.y+400+shake);
-  noStroke(); fill(169,214,182); rect(0,0,2000,2000);
+  noStroke(); fill(169,214,182); rect(0,0,3000,3000);
   for (var i=0; i<jurassic_grassusses.length; i++) { grass(jurassic_grassusses[i].x,jurassic_grassusses[i].y); }
 
   function drawLeaves(tx,ty,sc) {
@@ -635,6 +635,7 @@ ellipse(130, 280, 240, 240);
     textSize(12); fill(255); textFont("Courier");
     text("Players: "+totalPlayers, -270, 350);
   }
+ pop();
 if (dist(ducks.x,ducks.y, 270, yy+140) < 120) {
     fill(0,50); noStroke(); rect(300,550,265,40,5);
     textSize(24); fill(0); textFont("Courier");
@@ -646,8 +647,6 @@ if (dist(ducks.x,ducks.y, 270, yy+140) < 120) {
       }
     }
   }
-  pop();
-
   // Offer pancake prompt
   if (dist(ducks.x,ducks.y,0,30) < 80+carrott.sz*30) {
     fill(0,50); noStroke(); rect(300,550,265,40,5);
