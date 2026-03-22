@@ -624,7 +624,7 @@ carrot();
   tree(); treehouse();
   push(); translate(616,222); house(0,-18); door(87,358); windoww(-16,302); pop();
   fill(255,0,0,100);
-ellipse(130, 280, 240, 240);
+ellipse(250, 340, 120, 120);
   serve_pancakes(20,"front");
 
   // Player count badge
