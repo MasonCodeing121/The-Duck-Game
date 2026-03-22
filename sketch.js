@@ -354,8 +354,8 @@ function ducklol(x, y, r, sz) {
 
 var carrott   = { ang:0, sz:1 };
 var obstacles = [
-  { x:180, y:260, r:120 },
-  { x:616, y:300, r:140 }
+  { x:130, y:280, r:120 },
+  { x:616, y:222, r:120 }
 ];
 
 function carrot() {
@@ -567,7 +567,23 @@ for (var i=0; i<jurassic_grassusses.length; i++) {
 
 var intro_timer = 1000;
 var scene2b     = "menu";
+function treeScene() {
+  background(120, 85, 60); // cozy wood color
 
+  textSize(40);
+  fill(255);
+  text("Inside the Treehouse", 300, 80);
+  
+  fill(0);
+  rect(300, 550, 265, 40, 5);
+  textSize(20);
+  text("Press ESC to leave", 300, 550);
+
+  // exit back to main game
+  if (keys[27]) { // ESC key
+    scene = "game";
+  }
+}
 function game() {
   background(149,191,161);
   shake_time--;
@@ -621,7 +637,17 @@ function game() {
   }
 
   pop();
-
+if (dist(ducks.x,ducks.y,130,280) < 120) {
+    fill(0,50); noStroke(); rect(300,550,265,40,5);
+    textSize(24); fill(0); textFont("Courier");
+    text('"E" to enter',300,550);
+    if (keys[69]) {
+      if (frameCount%20<1 && ducks.pancakes>2) {
+        ducks.pancakes-=3; shake_time=30;
+        scene = "treeScene";
+      }
+    }
+  }
   // Offer pancake prompt
   if (dist(ducks.x,ducks.y,0,30) < 80+carrott.sz*30) {
     fill(0,50); noStroke(); rect(300,550,265,40,5);
@@ -722,6 +748,9 @@ function draw() {
       textFont("Comic Sans MS"); textSize(15); fill(0); noStroke();
       text("Meters from carrot: "+round(dc/50),93,46);
       text("Carrot size: "+round(carrott.sz),93,29);
+      break;
+    case "treeScene": 
+      treeScene(); 
       break;
     case "menu": menu(); break;
     case "how":  how();  break;
