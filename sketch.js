@@ -636,7 +636,7 @@ carrot();
   }
 
   pop();
-if (dist(ducks.x,ducks.y,130,280) < 120) {
+if (dist(ducks.x,ducks.y, cam.x+130, cam.y+280) < 120) {
     fill(0,50); noStroke(); rect(300,550,265,40,5);
     textSize(24); fill(0); textFont("Courier");
     text('"E" to enter',300,550);
