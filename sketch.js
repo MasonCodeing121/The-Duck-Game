@@ -354,7 +354,7 @@ function ducklol(x, y, r, sz) {
 
 var carrott   = { ang:0, sz:1 };
 var obstacles = [
-  { x:180, y:320, r:120 },
+  { x:270, y:340, r:120 },
   { x:616, y:260, r:120 }
 ];
 
@@ -623,8 +623,6 @@ carrot();
   drawLeaves(99,44,null); drawLeaves(141,-17,1.3); drawLeaves(248,56,1.2); drawLeaves(251,14,null);
   tree(); treehouse();
   push(); translate(616,222); house(0,-18); door(87,358); windoww(-16,302); pop();
-  fill(255,0,0,100);
-ellipse(270, 340, 120, 120);
   serve_pancakes(20,"front");
 
   // Player count badge
@@ -636,7 +634,7 @@ ellipse(270, 340, 120, 120);
     text("Players: "+totalPlayers, -270, 350);
   }
  pop();
-if (dist(ducks.x,ducks.y, 270, yy+140) < 120) {
+if (dist(ducks.x,ducks.y, 270, yy+100) < 120) {
     fill(0,50); noStroke(); rect(300,550,265,40,5);
     textSize(24); fill(0); textFont("Courier");
     text('"E" to enter',300,550);
