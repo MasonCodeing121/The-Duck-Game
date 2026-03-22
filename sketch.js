@@ -613,13 +613,12 @@ function game() {
   allDucks.sort((a,b) => a.y - b.y);
 
   // Render carrot then each duck in Y order
-  carrot();
   for (var i=0; i<allDucks.length; i++) {
     var d = allDucks[i];
     if (d.isLocal) { duck(ducks.x, ducks.y); }
     else { drawOtherDuck(d.p.x, d.p.y, d.p, d.id.slice(0,6)); }
   }
-
+carrot();
   drawLeaves(99,44,null); drawLeaves(141,-17,1.3); drawLeaves(248,56,1.2); drawLeaves(251,14,null);
   tree(); treehouse();
   push(); translate(616,222); house(0,-18); door(87,358); windoww(-16,302); pop();
