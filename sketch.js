@@ -623,6 +623,8 @@ carrot();
   drawLeaves(99,44,null); drawLeaves(141,-17,1.3); drawLeaves(248,56,1.2); drawLeaves(251,14,null);
   tree(); treehouse();
   push(); translate(616,222); house(0,-18); door(87,358); windoww(-16,302); pop();
+  fill(255,0,0,100);
+ellipse(130, 280, 240, 240);
   serve_pancakes(20,"front");
 
   // Player count badge
@@ -638,7 +640,7 @@ if (dist(ducks.x,ducks.y, 270, yy+140) < 120) {
     textSize(24); fill(0); textFont("Courier");
     text('"E" to enter',300,550);
     if (keys[69]) {
-      if (ducks.pancakes>2) {
+      if (frameCount % 20 < 1 && ducks.pancakes>2) {
         ducks.pancakes-=3; shake_time=30;
         scene = "treeScene";
       }
