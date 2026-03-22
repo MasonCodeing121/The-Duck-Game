@@ -638,7 +638,7 @@ if (dist(ducks.x,ducks.y, 270, yy+140) < 120) {
     textSize(24); fill(0); textFont("Courier");
     text('"E" to enter',300,550);
     if (keys[69]) {
-      if (frameCount%20<1 && ducks.pancakes>2) {
+      if (ducks.pancakes>2) {
         ducks.pancakes-=3; shake_time=30;
         scene = "treeScene";
       }
