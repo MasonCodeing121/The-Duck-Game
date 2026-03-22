@@ -354,8 +354,8 @@ function ducklol(x, y, r, sz) {
 
 var carrott   = { ang:0, sz:1 };
 var obstacles = [
-  { x:150, y:290, r:120 },
-  { x:616, y:222, r:120 }
+  { x:180, y:320, r:120 },
+  { x:616, y:260, r:120 }
 ];
 
 function carrot() {
@@ -633,7 +633,7 @@ carrot();
     textSize(12); fill(255); textFont("Courier");
     text("Players: "+totalPlayers, -270, 350);
   }
-if (dist(ducks.x,ducks.y, 130, 280) < 120) {
+if (dist(ducks.x,ducks.y, 270, yy+140) < 120) {
     fill(0,50); noStroke(); rect(300,550,265,40,5);
     textSize(24); fill(0); textFont("Courier");
     text('"E" to enter',300,550);
