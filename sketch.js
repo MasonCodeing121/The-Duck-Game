@@ -354,7 +354,7 @@ function ducklol(x, y, r, sz) {
 
 var carrott   = { ang:0, sz:1 };
 var obstacles = [
-  { x:130, y:280, r:120 },
+  { x:150, y:290, r:120 },
   { x:616, y:222, r:120 }
 ];
 
@@ -601,7 +601,8 @@ function game() {
     }
   }
   drawLeaves(99,44,null); drawLeaves(141,-17,1.3); drawLeaves(248,56,1.2); drawLeaves(251,14,null);
-
+textSize(30); textFont("Courier"); fill(153, 153, 153); noStroke();
+  text("Welcome to The Duck Game!",-173,240);
   serve_pancakes(20,"back");
   dirt();
 
@@ -622,8 +623,6 @@ carrot();
   drawLeaves(99,44,null); drawLeaves(141,-17,1.3); drawLeaves(248,56,1.2); drawLeaves(251,14,null);
   tree(); treehouse();
   push(); translate(616,222); house(0,-18); door(87,358); windoww(-16,302); pop();
-  textSize(30); textFont("Courier"); fill(153, 153, 153); noStroke();
-  text("Welcome to The Duck Game!",-173,240);
   serve_pancakes(20,"front");
 
   // Player count badge
@@ -634,9 +633,7 @@ carrot();
     textSize(12); fill(255); textFont("Courier");
     text("Players: "+totalPlayers, -270, 350);
   }
-
-  pop();
-if (dist(ducks.x,ducks.y, cam.x+130, cam.y+280) < 120) {
+if (dist(ducks.x,ducks.y, 130, 280) < 120) {
     fill(0,50); noStroke(); rect(300,550,265,40,5);
     textSize(24); fill(0); textFont("Courier");
     text('"E" to enter',300,550);
@@ -647,6 +644,8 @@ if (dist(ducks.x,ducks.y, cam.x+130, cam.y+280) < 120) {
       }
     }
   }
+  pop();
+
   // Offer pancake prompt
   if (dist(ducks.x,ducks.y,0,30) < 80+carrott.sz*30) {
     fill(0,50); noStroke(); rect(300,550,265,40,5);
