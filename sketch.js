@@ -665,9 +665,6 @@ if (dist(ducks.x,ducks.y, 270, yy+100) < 120) {
     if (keys[69]) {
       if (frameCount % 20 < 1 && ducks.pancakes>2) {
         ducks.pancakes-=3; shake_time=30;
-        // 👇 move duck to indoor spawn
-    ducks.x = 300;
-    ducks.y = 400;
         scene = "treeScene";
       }
     }
