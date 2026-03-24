@@ -304,7 +304,7 @@ function blocked(x, y) {
   var obs = (scene === "treeScene") ? indoorObstacles : obstacles;
 
   for (var i = 0; i < obs.length; i++) {
-    if (dist(x, y, obs[i].x, obs[i].y) < obs[i].r) return true;
+    if (dist(x, y, obs[i].x, obs[i].y) < obs[i].r - 10) return true;
   }
   return false;
 }
