@@ -378,7 +378,7 @@ var indoorObstacles = [
 // BOTTOM wall
 { x: 100, y: 700, r: 100 },
 { x: 300, y: 700, r: 100 },
-{ x: 500, y: 700, r: 100 },
+{ x: 500, y: 700, r: 100 }
 ];
 
 function carrot() {
