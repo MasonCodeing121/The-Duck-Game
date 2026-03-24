@@ -301,6 +301,8 @@ function drawOtherDuck(x, y, p, label) {
 }
 
 function blocked(x, y) {
+  var obs = (scene === "treeScene") ? indoorObstacles : obstacles;
+
   for (var i = 0; i < obstacles.length; i++) {
     if (dist(x,y,obstacles[i].x,obstacles[i].y) < obstacles[i].r) return true;
   }
@@ -356,6 +358,22 @@ var carrott   = { ang:0, sz:1 };
 var obstacles = [
   { x:270, y:340, r:120 },
   { x:616, y:260, r:120 }
+];
+var indoorObstacles = [
+  { x:650, y:600, r:100 }, //right wall
+  { x:650, y:500, r:100 },
+  { x:650, y:400, r:100 },
+  { x:650, y:300, r:100 },
+  { x:650, y:200, r:100 },
+  { x:650, y:100, r:100 },
+  { x:650, y:0, r:100 },
+   { x:-50, y:600, r:100 }, //left wall
+  { x:-50, y:500, r:100 },
+  { x:-50, y:400, r:100 },
+  { x:-50, y:300, r:100 },
+  { x:-50, y:200, r:100 },
+  { x:-50, y:100, r:100 },
+  { x:-50, y:0, r:100 },
 ];
 
 function carrot() {
@@ -568,7 +586,9 @@ for (var i=0; i<jurassic_grassusses.length; i++) {
 var intro_timer = 1000;
 var scene2b     = "menu";
 function treeScene() {
-  background(120, 85, 60); // cozy wood color
+  background(0, 0, 0);
+  fill(120, 85, 60); // cozy wood color
+  rect(0, 0, 600, 600);
   honk();
 duck(ducks.x, ducks.y);
   textSize(40);
@@ -643,6 +663,9 @@ if (dist(ducks.x,ducks.y, 270, yy+100) < 120) {
     if (keys[69]) {
       if (frameCount % 20 < 1 && ducks.pancakes>2) {
         ducks.pancakes-=3; shake_time=30;
+        // 👇 move duck to indoor spawn
+    ducks.x = 300;
+    ducks.y = 400;
         scene = "treeScene";
       }
     }
