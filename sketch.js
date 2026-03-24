@@ -569,6 +569,7 @@ var intro_timer = 1000;
 var scene2b     = "menu";
 function treeScene() {
   background(120, 85, 60); // cozy wood color
+  honk();
 duck(ducks.x, ducks.y);
   textSize(40);
   fill(255);
@@ -577,6 +578,7 @@ duck(ducks.x, ducks.y);
   fill(0);
   rect(300, 550, 265, 40, 5);
   textSize(20);
+  fill(255);
   text("Press ESC to leave", 300, 550);
 
   // exit back to main game
