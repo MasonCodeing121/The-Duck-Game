@@ -301,11 +301,11 @@ function drawOtherDuck(x, y, p, label) {
 }
 
 function blocked(x, y) {
-  //var obs = (scene === "treeScene") ? indoorObstacles : obstacles;
+  var obs = (scene === "treeScene") ? indoorObstacles : obstacles;
 
-  //for (var i = 0; i < obs.length; i++) {
-    //if (dist(x, y, obs[i].x, obs[i].y) < obs[i].r) return true;
-  //}
+  for (var i = 0; i < obs.length; i++) {
+    if (dist(x, y, obs[i].x, obs[i].y) < obs[i].r) return true;
+  }
   return false;
 }
 
@@ -596,6 +596,7 @@ function treeScene() {
   rect(300, 300, 600, 600);
   cam.x = lerp(cam.x, -ducks.x, 0.1);
 cam.y = lerp(cam.y, -ducks.y, 0.1);
+  console.log(ducks.x, ducks.y);
   push();
 translate(cam.x + 300, cam.y + 300);
   honk();
