@@ -604,6 +604,8 @@ duck(ducks.x, ducks.y);
   // exit back to main game
   if (keys[27]) { // ESC key
     scene = "game";
+    ducks.x = 0;
+    ducks.y = 150;
   }
 }
 function game() {
