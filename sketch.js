@@ -301,7 +301,7 @@ function drawOtherDuck(x, y, p, label) {
 }
 
 function blocked(x, y) {
-  var obs = (scene === "treeScene") ? indoorObstacles : obstacles;
+  var obs = (scene === "") ? indoorObstacles : obstacles;
 
   for (var i = 0; i < obstacles.length; i++) {
     if (dist(x,y,obstacles[i].x,obstacles[i].y) < obstacles[i].r) return true;
@@ -665,6 +665,11 @@ if (dist(ducks.x,ducks.y, 270, yy+100) < 120) {
     if (keys[69]) {
       if (frameCount % 20 < 1 && ducks.pancakes>2) {
         ducks.pancakes-=3; shake_time=30;
+        // when entering
+ducks.x = 300;
+ducks.y = 300;
+cam.x = 0;
+cam.y = 0;
         scene = "treeScene";
       }
     }
