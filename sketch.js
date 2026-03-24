@@ -301,11 +301,11 @@ function drawOtherDuck(x, y, p, label) {
 }
 
 function blocked(x, y) {
-  var obs = (scene === "treeScene") ? indoorObstacles : obstacles;
+  //var obs = (scene === "treeScene") ? indoorObstacles : obstacles;
 
-  for (var i = 0; i < obs.length; i++) {
-    if (dist(x, y, obs[i].x, obs[i].y) < obs[i].r) return true;
-  }
+  //for (var i = 0; i < obs.length; i++) {
+    //if (dist(x, y, obs[i].x, obs[i].y) < obs[i].r) return true;
+  //}
   return false;
 }
 
