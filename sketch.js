@@ -588,7 +588,7 @@ var scene2b     = "menu";
 function treeScene() {
   background(0, 0, 0);
   fill(120, 85, 60); // cozy wood color
-  rect(0, 0, 600, 600);
+  rect(300, 300, 600, 600);
   honk();
 duck(ducks.x, ducks.y);
   textSize(40);
