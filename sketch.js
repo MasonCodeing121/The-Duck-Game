@@ -360,20 +360,25 @@ var obstacles = [
   { x:616, y:260, r:120 }
 ];
 var indoorObstacles = [
-  { x:650, y:600, r:100 }, //right wall
-  { x:650, y:500, r:100 },
-  { x:650, y:400, r:100 },
-  { x:650, y:300, r:100 },
-  { x:650, y:200, r:100 },
-  { x:650, y:100, r:100 },
-  { x:650, y:0, r:100 },
-   { x:-50, y:600, r:100 }, //left wall
-  { x:-50, y:500, r:100 },
-  { x:-50, y:400, r:100 },
-  { x:-50, y:300, r:100 },
-  { x:-50, y:200, r:100 },
-  { x:-50, y:100, r:100 },
-  { x:-50, y:0, r:100 },
+  // RIGHT wall
+{ x: 700, y: 100, r: 100 }
+{ x: 700, y: 300, r: 100 }
+{ x: 700, y: 500, r: 100 }
+
+// LEFT wall
+{ x: -100, y: 100, r: 100 }
+{ x: -100, y: 300, r: 100 }
+{ x: -100, y: 500, r: 100 }
+
+// TOP wall
+{ x: 100, y: -100, r: 100 }
+{ x: 300, y: -100, r: 100 }
+{ x: 500, y: -100, r: 100 }
+
+// BOTTOM wall
+{ x: 100, y: 700, r: 100 }
+{ x: 300, y: 700, r: 100 }
+{ x: 500, y: 700, r: 100 }
 ];
 
 function carrot() {
@@ -673,8 +678,8 @@ if (dist(ducks.x,ducks.y, 270, yy+100) < 120) {
         // when entering
 ducks.x = 300;
 ducks.y = 300;
-cam.x = ducks.x;
-cam.y = ducks.y;
+cam.x = -ducks.x;
+cam.y = -ducks.y;
         scene = "treeScene";
       }
     }
