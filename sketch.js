@@ -301,11 +301,30 @@ function drawOtherDuck(x, y, p, label) {
 }
 
 function blocked(x, y) {
-  var obs = (scene === "treeScene") ? indoorObstacles : obstacles;
-
-  for (var i = 0; i < obs.length; i++) {
-    if (dist(x, y, obs[i].x, obs[i].y) < obs[i].r - 10) return true;
+  // 🧱 indoor (rectangles)
+  if (scene === "treeScene") {
+    for (let o of indoorObstacles) {
+      let DuckR = 10;
+      if (
+        x > o.x - o.w/2 - DuckR &&
+        x < o.x + o.w/2 + DuckR &&
+        y > o.y - o.h/2 - DuckR &&
+        y < o.y + o.h/2 + DuckR
+      ) {
+        return true;
+      }
+    }
   }
+
+  // 🌳 outdoor (circles)
+  else {
+    for (let o of obstacles) {
+      if (dist(x, y, o.x, o.y) < o.r) {
+        return true;
+      }
+    }
+  }
+
   return false;
 }
 
@@ -360,25 +379,10 @@ var obstacles = [
   { x:616, y:260, r:120 }
 ];
 var indoorObstacles = [
-  // RIGHT wall
-{ x: 700, y: 100, r: 100 },
-{ x: 700, y: 300, r: 100 },
-{ x: 700, y: 500, r: 100 },
-
-// LEFT wall
-{ x: -100, y: 100, r: 100 },
-{ x: -100, y: 300, r: 100 },
-{ x: -100, y: 500, r: 100 },
-
-// TOP wall
-{ x: 100, y: -100, r: 100 },
-{ x: 300, y: -100, r: 100 },
-{ x: 500, y: -100, r: 100 },
-
-// BOTTOM wall
-{ x: 100, y: 700, r: 100 },
-{ x: 300, y: 700, r: 100 },
-{ x: 500, y: 700, r: 100 }
+  { x: 300, y: 0,   w: 600, h: 20 },  // top
+  { x: 300, y: 600, w: 600, h: 20 },  // bottom
+  { x: 0,   y: 300, w: 20,  h: 600 }, // left
+  { x: 600, y: 300, w: 20,  h: 600 }  // right
 ];
 
 function carrot() {
