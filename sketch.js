@@ -235,6 +235,7 @@ var ducks = {
   r1:0, r2:0, r3:0, r4:0, r5:0, r6:0, r7:0,
   walking:false, pancakes:0, stamina:100,
   U:false, D:false, R:false, L:false,
+  hasQuack: false,
 };
 
 function dirt() {
@@ -374,6 +375,47 @@ function ducklol(x, y, r, sz) {
 }
 
 var carrott   = { ang:0, sz:1 };
+
+// ─── Chest & Quack Power ──────────────────────────────────────────────────────
+var chestState   = { opened: false, showPopup: false };
+var seismicWaves = [];
+var quackTimer   = 0;
+
+const chestImg = new Image();
+chestImg.src   = 'chest-sheet.jpg';
+
+const quackAudio = new Audio('quack.mp3');
+quackAudio.preload = 'auto';
+
+// ─── Save / Load ──────────────────────────────────────────────────────────────
+function saveGame() {
+  try {
+    localStorage.setItem('duckgame_save', JSON.stringify({
+      x: ducks.x, y: ducks.y, d: ducks.d,
+      pancakes: ducks.pancakes, stamina: ducks.stamina,
+      hasQuack: ducks.hasQuack,
+      carrotSz: carrott.sz,
+      chestOpened: chestState.opened
+    }));
+  } catch(e) {}
+}
+
+function loadGame() {
+  try {
+    const raw = localStorage.getItem('duckgame_save');
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (s.x          !== undefined) ducks.x          = s.x;
+    if (s.y          !== undefined) ducks.y          = s.y;
+    if (s.d          !== undefined) ducks.d          = s.d;
+    if (s.pancakes   !== undefined) ducks.pancakes   = s.pancakes;
+    if (s.stamina    !== undefined) ducks.stamina    = s.stamina;
+    if (s.hasQuack   !== undefined) ducks.hasQuack   = s.hasQuack;
+    if (s.carrotSz   !== undefined) carrott.sz       = s.carrotSz;
+    if (s.chestOpened!== undefined) chestState.opened = s.chestOpened;
+  } catch(e) {}
+}
+
 var obstacles = [
   { x:270, y:340, r:120 },
   { x:616, y:260, r:120 }
@@ -594,31 +636,104 @@ for (var i=0; i<jurassic_grassusses.length; i++) {
 
 var intro_timer = 1000;
 var scene2b     = "menu";
-function treeScene() {
-  background(0, 0, 0);
-  fill(120, 85, 60); // cozy wood color
+// ─── Draw chest sprite from sheet (top-left = closed, bottom-right = open) ───
+function drawChestSprite(x, y, open) {
+  if (!chestImg.complete || chestImg.naturalWidth === 0) return;
+  const sw = chestImg.naturalWidth  / 2;
+  const sh = chestImg.naturalHeight / 2;
+  const sx = open ? sw : 0;
+  const sy = open ? sh : 0;
+  const dw = 100, dh = 100;
+  ctx.drawImage(chestImg, sx, sy, sw, sh, x - dw/2, y - dh/2, dw, dh);
+}
+
+// ─── BotW-style item popup ────────────────────────────────────────────────────
+function drawBotWPopup() {
+  // Dim overlay
+  fill(0, 160); noStroke();
   rect(300, 300, 600, 600);
 
-  // Update duck movement and draw directly (no camera — room fits the canvas)
+  // Outer gold border
+  stroke(210, 175, 55); strokeWeight(3);
+  fill(15, 15, 35, 245);
+  rect(300, 285, 340, 150, 10);
+
+  // Divider line
+  stroke(210, 175, 55, 120); strokeWeight(1);
+  noFill();
+  rect(300, 285, 326, 136, 8);
+
+  // Header label
+  textFont("Courier"); noStroke();
+  textSize(12); fill(210, 175, 55);
+  text("- You received -", 300, 230);
+
+  // Item name
+  textSize(26); fill(255);
+  text("Quaking Power", 300, 268);
+
+  // Description
+  textSize(13); fill(190, 210, 255);
+  text("ex:hi", 300, 298);
+
+  // Dismiss hint
+  textSize(11); fill(140, 140, 160);
+  text("Click anywhere to continue", 300, 340);
+
+  if (clicked) {
+    chestState.showPopup = false;
+    clicked = false;
+  }
+}
+
+// ─── Treehouse scene ──────────────────────────────────────────────────────────
+function treeScene() {
+  background(0, 0, 0);
+  fill(120, 85, 60);
+  rect(300, 300, 600, 600);
+
+  // Chest (centre of room, slightly above duck spawn)
+  const chestX = 300, chestY = 210;
+  drawChestSprite(chestX, chestY, chestState.opened);
+
+  // Update duck movement and draw directly
   honk();
   duck(ducks.x, ducks.y);
 
   textSize(40);
-  fill(255);
-  text("Inside the Treehouse", 300, 80);
+  fill(255); noStroke();
+  text("Inside the Treehouse", 300, 60);
 
-  fill(0);
+  // "E to open" prompt — same style as treehouse entry in game()
+  if (!chestState.opened && dist(ducks.x, ducks.y, chestX, chestY) < 70) {
+    fill(0, 50); noStroke(); rect(300, 480, 265, 40, 5);
+    textSize(24); fill(0); textFont("Courier");
+    text('"E" to open', 300, 480);
+    if (keys[69] && frameCount % 20 < 1) {
+      chestState.opened   = true;
+      chestState.showPopup = true;
+      ducks.hasQuack      = true;
+      saveGame();
+    }
+  }
+
+  // ESC prompt
+  fill(0); noStroke();
   rect(300, 550, 265, 40, 5);
   textSize(20);
   fill(255);
   text("Press ESC to leave", 300, 550);
 
   // exit back to main game
-  if (keys[27]) { // ESC key
-    scene = "game";
+  if (keys[27]) {
+    saveGame();
+    scene  = "game";
     ducks.x = 0;
     ducks.y = 150;
   }
+
+  // BotW popup (drawn last so it's on top)
+  if (chestState.showPopup) drawBotWPopup();
 }
 function game() {
   background(149,191,161);
@@ -655,6 +770,33 @@ textSize(30); textFont("Courier"); fill(153, 153, 153); noStroke();
     if (d.isLocal) { duck(ducks.x, ducks.y); }
     else { drawOtherDuck(d.p.x, d.p.y, d.p, d.id.slice(0,6)); }
   }
+
+  // ── Quack: 3 lines from bill ──────────────────────────────────────────────
+  if (quackTimer > 0) {
+    quackTimer--;
+    const billX = ducks.x + ducks.r1 * 25;
+    const billY = ducks.y + (-16 + ducks.r2 * 10);
+    const alpha = quackTimer * 8;
+    strokeWeight(2.5); noFill();
+    stroke(255, 220, 50, alpha);
+    line(billX, billY, billX + ducks.r1*28, billY + ducks.r2*28);
+    stroke(255, 200, 30, alpha);
+    line(billX, billY, billX + ducks.r1*22 + ducks.r3*12, billY + ducks.r2*22 + ducks.r4*12);
+    line(billX, billY, billX + ducks.r1*22 - ducks.r3*12, billY + ducks.r2*22 - ducks.r4*12);
+  }
+
+  // ── Seismic waves ─────────────────────────────────────────────────────────
+  for (var wi = seismicWaves.length - 1; wi >= 0; wi--) {
+    var wv = seismicWaves[wi];
+    if (wv.delay > 0) { wv.delay--; continue; }
+    noFill();
+    stroke(180, 80, 220, wv.opacity); strokeWeight(3);
+    arc(wv.x, wv.y, wv.r * 2, wv.r * 0.6, 0, 360);
+    wv.r       += 5;
+    wv.opacity -= 6;
+    if (wv.opacity <= 0) seismicWaves.splice(wi, 1);
+  }
+
 carrot();
   drawLeaves(99,44,null); drawLeaves(141,-17,1.3); drawLeaves(248,56,1.2); drawLeaves(251,14,null);
   tree(); treehouse();
@@ -707,11 +849,21 @@ cam.y = -ducks.y;
   pop();
   stroke(0); fill(185,231,235);
   quad(20,580,20,570,20+ducks.stamina,570,25+ducks.stamina,580);
-  textSize(30); fill(0,0,0); noStroke();
+  textFont("Courier"); textSize(30); fill(0,0,0); noStroke();
   text(ducks.pancakes,50,548);
   pancakecola(50,522);
-  textSize(16); fill(0,0,0); textFont("Courier");
+  textSize(16); fill(0,0,0);
   text("STAMINA",62+ducks.stamina,575);
+
+  // ── Quack power: trigger on click ─────────────────────────────────────────
+  if (clicked && ducks.hasQuack) {
+    quackAudio.currentTime = 0;
+    quackAudio.play().catch(function(){});
+    quackTimer = 30;
+    seismicWaves.push({ x: ducks.x, y: ducks.y, r: 8, opacity: 220, delay: 0  });
+    seismicWaves.push({ x: ducks.x, y: ducks.y, r: 8, opacity: 220, delay: 8  });
+    seismicWaves.push({ x: ducks.x, y: ducks.y, r: 8, opacity: 220, delay: 16 });
+  }
   cam.x = lerp(cam.x,-ducks.x,0.1);
   cam.y = lerp(cam.y,-ducks.y,0.1);
   if (!(ducks.x>-1000&&ducks.x<1000&&ducks.y>-1000&&ducks.y<1000)) {
@@ -794,6 +946,9 @@ function draw() {
     case "how":  how();  break;
   }
 
+  // Auto-save every ~5 seconds (300 frames)
+  if (frameCount % 300 === 0 && scene === "game") saveGame();
+
   if (intro_timer < 420) {
     push(); translate(300,300);
     for (var i=0; i<14; i++) { rotate(28); ducklol(0,350+sin(intro_timer)*300,0,500); }
@@ -822,4 +977,5 @@ function draw() {
 // ─── Kick off ─────────────────────────────────────────────────────────────────
 textAlign('center','center');
 textFont("Courier");
+loadGame();
 requestAnimationFrame(draw);
