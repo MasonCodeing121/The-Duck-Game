@@ -427,7 +427,8 @@ var indoorObstacles = [
   { x: 300, y: 0,   w: 600, h: 20 },  // top
   { x: 300, y: 600, w: 600, h: 20 },  // bottom
   { x: 0,   y: 300, w: 20,  h: 600 }, // left
-  { x: 600, y: 300, w: 20,  h: 600 }  // right
+  { x: 600, y: 300, w: 20,  h: 600 }, // right
+  { x: 300, y: 210, w: 80,  h: 60  }  // chest
 ];
 
 function carrot() {
@@ -614,20 +615,46 @@ function serve_pancakes(strv,beef) {
 
 var shake = 0, shake_time = 0;
 
+// ─── Grass Image (flood-fill background removal at runtime) ──────────────────
 var jurassic_grassusses = [];
-function grass(x,y) {
-  push(); translate(x,y); strokeWeight(2); stroke(0); fill(153,199,166);
-  beginShape();
-  vertex(-22,2);
-  bezierVertex(-22,0,-24,-9,-33,-14); bezierVertex(-33,-14,-24,-14,-20,-8);
-  bezierVertex(-20,-8,-20,-14,-25,-23); bezierVertex(-25,-23,-19,-19,-16,-13);
-  bezierVertex(-16,-13,-14,-18,-16,-29); bezierVertex(-10,-18,-11,-17,-9,-10);
-  bezierVertex(-9,-10,-9,-14,-3,-21); bezierVertex(-3,-21,-4,-12,-2,-6);
-  bezierVertex(-2,-6,-2,-18,8,-26); bezierVertex(8,-26,2,-13,5,-4);
-  bezierVertex(5,-4,5,-8,8,-16); bezierVertex(8,-16,8,-9,12,-4);
-  bezierVertex(12,-4,12,-10,17,-20); bezierVertex(17,-20,17,-9,19,-3);
-  bezierVertex(19,-3,19,-8,27,-15); bezierVertex(27,-15,22,-4,23,2);
-  endShape(); pop();
+var _grassReady   = false;
+var _grassCanvas  = document.createElement('canvas');
+var _grassCtx2d   = _grassCanvas.getContext('2d');
+var _grassRawImg  = new Image();
+
+_grassRawImg.onload = function() {
+  var W = _grassRawImg.naturalWidth, H = _grassRawImg.naturalHeight;
+  _grassCanvas.width = W; _grassCanvas.height = H;
+  _grassCtx2d.drawImage(_grassRawImg, 0, 0);
+  var id = _grassCtx2d.getImageData(0, 0, W, H);
+  var px = id.data;
+  // Sample top-left corner as the background colour
+  var bgR = px[0], bgG = px[1], bgB = px[2], thr = 55;
+  var visited = new Uint8Array(W * H);
+  var stack = [];
+  for (var bx = 0; bx < W; bx++) { stack.push(bx, 0); stack.push(bx, H-1); }
+  for (var by = 1; by < H-1; by++) { stack.push(0, by); stack.push(W-1, by); }
+  while (stack.length) {
+    var cy = stack.pop(), cx = stack.pop();
+    if (cx < 0 || cx >= W || cy < 0 || cy >= H) continue;
+    var si = cy * W + cx;
+    if (visited[si]) continue;
+    visited[si] = 1;
+    var pi = si * 4;
+    if (Math.abs(px[pi]-bgR)+Math.abs(px[pi+1]-bgG)+Math.abs(px[pi+2]-bgB) > thr) continue;
+    px[pi+3] = 0;
+    stack.push(cx+1, cy); stack.push(cx-1, cy);
+    stack.push(cx, cy+1); stack.push(cx, cy-1);
+  }
+  _grassCtx2d.putImageData(id, 0, 0);
+  _grassReady = true;
+};
+_grassRawImg.src = 'grass-raw.png';
+
+function grass(x, y) {
+  if (!_grassReady) return;
+  var gw = 68, gh = 50;
+  ctx.drawImage(_grassCanvas, x - gw/2, y - gh, gw, gh);
 }
 
 for (var i=0; i<100; i++) {
