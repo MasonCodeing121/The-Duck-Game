@@ -368,7 +368,7 @@ if (!blocked(ducks.x, ny)) {
 ducks.walking = moved;
   
  if (dx !== 0 || dy !== 0) {
-  ducks.d = atan2(dy, dx));
+  ducks.d = atan2(dy, dx);
 }
   if (keys[32]) {
     if (ducks.stamina > 1) { ducks.speed=4; } else { ducks.speed=2; }
@@ -406,7 +406,7 @@ var indoorObstacles = [
 ];
 
 function carrot() {
-  carrott.ang = atan2(ducks.x, ducks.y-30));
+  carrott.ang = atan2(ducks.x, ducks.y-30);
   push();
   scale(carrott.sz);
   stroke(0); strokeWeight(3);
