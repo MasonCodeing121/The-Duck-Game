@@ -304,7 +304,7 @@ function blocked(x, y) {
   // 🧱 indoor (rectangles)
   if (scene === "treeScene") {
     for (let o of indoorObstacles) {
-      const DuckR = 10;
+      let DuckR = 10;
       if (
         x > o.x - o.w/2 - DuckR &&
         x < o.x + o.w/2 + DuckR &&
@@ -342,34 +342,14 @@ function honk() {
     ducks.r6 = lerp(ducks.r6, 0, 0.1);
   }
   ducks.walking = keys[87]||keys[83]||keys[65]||keys[68] ? true : false;
-  
-  let dx = 0;
-let dy = 0;
-
-if (keys[87]) dy -= ducks.speed; // W
-if (keys[83]) dy += ducks.speed; // S
-if (keys[65]) dx -= ducks.speed; // A
-if (keys[68]) dx += ducks.speed; // D
-
-let moved = false;
-
-let nx = ducks.x + dx;
-if (!blocked(nx, ducks.y)) {
-  ducks.x = nx;
-  moved = true;
-}
-
-let ny = ducks.y + dy;
-if (!blocked(ducks.x, ny)) {
-  ducks.y = ny;
-  moved = true;
-}
-
-ducks.walking = moved;
-  
- if (dx !== 0 || dy !== 0) {
-  ducks.d = atan2(dy, dx);
-}
+  if (keys[87]) { var ny=ducks.y-ducks.speed; if(!blocked(ducks.x,ny)) ducks.y=ny; ducks.U=true;  } else { ducks.U=false; }
+  if (keys[83]) { var ny=ducks.y+ducks.speed; if(!blocked(ducks.x,ny)) ducks.y=ny; ducks.D=true;  } else { ducks.D=false; }
+  if (keys[65]) { var nx=ducks.x-ducks.speed; if(!blocked(nx,ducks.y)) ducks.x=nx; ducks.L=true;  } else { ducks.L=false; }
+  if (keys[68]) { var nx=ducks.x+ducks.speed; if(!blocked(nx,ducks.y)) ducks.x=nx; ducks.R=true;  } else { ducks.R=false; }
+  if (ducks.U) { if (ducks.L) { ducks.d=lerp(ducks.d,-180,0.1); } else { ducks.d=lerp(ducks.d,180,0.1); } }
+  if (ducks.D) { ducks.d=lerp(ducks.d,0,0.1);   }
+  if (ducks.L) { ducks.d=lerp(ducks.d,-90,0.1); }
+  if (ducks.R) { ducks.d=lerp(ducks.d,90,0.1);  }
   if (keys[32]) {
     if (ducks.stamina > 1) { ducks.speed=4; } else { ducks.speed=2; }
     if (ducks.stamina > 0) { ducks.stamina-=0.2; }
@@ -618,18 +598,15 @@ function treeScene() {
   background(0, 0, 0);
   fill(120, 85, 60); // cozy wood color
   rect(300, 300, 600, 600);
-  cam.x = lerp(cam.x, -ducks.x, 0.1);
-cam.y = lerp(cam.y, -ducks.y, 0.1);
-  console.log(ducks.x, ducks.y);
-  push();
-translate(cam.x + 300, cam.y + 300);
+
+  // Update duck movement and draw directly (no camera — room fits the canvas)
   honk();
-duck(ducks.x, ducks.y);
-  pop();
+  duck(ducks.x, ducks.y);
+
   textSize(40);
   fill(255);
   text("Inside the Treehouse", 300, 80);
-  
+
   fill(0);
   rect(300, 550, 265, 40, 5);
   textSize(20);
