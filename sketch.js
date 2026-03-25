@@ -344,7 +344,9 @@ function honk() {
   ducks.walking = keys[87]||keys[83]||keys[65]||keys[68] ? true : false;
   let dx = 0;
 let dy = 0;
-
+if (dx !== 0 || dy !== 0) {
+  ducks.angle = atan2(dy, dx);
+}
 if (keys[87]) dy -= ducks.speed; // W
 if (keys[83]) dy += ducks.speed; // S
 if (keys[65]) dx -= ducks.speed; // A
@@ -621,6 +623,7 @@ cam.y = lerp(cam.y, -ducks.y, 0.1);
   console.log(ducks.x, ducks.y);
   push();
 translate(cam.x + 300, cam.y + 300);
+  rotate(ducks.angle);
   honk();
 duck(ducks.x, ducks.y);
   pop();
@@ -718,7 +721,10 @@ cam.y = -ducks.y;
       }
     }
   }
+  push();
+  rotate(ducks.angle);
   honk();
+  pop();
   emitMove();
 
   noStroke(); fill(255,153,0);
