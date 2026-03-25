@@ -304,7 +304,7 @@ function blocked(x, y) {
   // 🧱 indoor (rectangles)
   if (scene === "treeScene") {
     for (let o of indoorObstacles) {
-      let DuckR = 10;
+      const DuckR = 10;
       if (
         x > o.x - o.w/2 - DuckR &&
         x < o.x + o.w/2 + DuckR &&
@@ -342,10 +342,28 @@ function honk() {
     ducks.r6 = lerp(ducks.r6, 0, 0.1);
   }
   ducks.walking = keys[87]||keys[83]||keys[65]||keys[68] ? true : false;
-  if (keys[87]) { var ny=ducks.y-ducks.speed; if(!blocked(ducks.x,ny)) ducks.y=ny; ducks.U=true;  } else { ducks.U=false; }
-  if (keys[83]) { var ny=ducks.y+ducks.speed; if(!blocked(ducks.x,ny)) ducks.y=ny; ducks.D=true;  } else { ducks.D=false; }
-  if (keys[65]) { var nx=ducks.x-ducks.speed; if(!blocked(nx,ducks.y)) ducks.x=nx; ducks.L=true;  } else { ducks.L=false; }
-  if (keys[68]) { var nx=ducks.x+ducks.speed; if(!blocked(nx,ducks.y)) ducks.x=nx; ducks.R=true;  } else { ducks.R=false; }
+  let dx = 0;
+let dy = 0;
+
+if (keys[87]) dy -= ducks.speed; // W
+if (keys[83]) dy += ducks.speed; // S
+if (keys[65]) dx -= ducks.speed; // A
+if (keys[68]) dx += ducks.speed; // D
+
+if (dx !== 0 && dy !== 0) {
+  dx *= 0.7;
+  dy *= 0.7;
+}
+
+let nx = ducks.x + dx;
+if (!blocked(nx, ducks.y)) {
+  ducks.x = nx;
+}
+
+let ny = ducks.y + dy;
+if (!blocked(ducks.x, ny)) {
+  ducks.y = ny;
+}
   if (ducks.U) { if (ducks.L) { ducks.d=lerp(ducks.d,-180,0.1); } else { ducks.d=lerp(ducks.d,180,0.1); } }
   if (ducks.D) { ducks.d=lerp(ducks.d,0,0.1);   }
   if (ducks.L) { ducks.d=lerp(ducks.d,-90,0.1); }
