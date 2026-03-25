@@ -342,34 +342,39 @@ function honk() {
     ducks.r6 = lerp(ducks.r6, 0, 0.1);
   }
   ducks.walking = keys[87]||keys[83]||keys[65]||keys[68] ? true : false;
+  
   let dx = 0;
 let dy = 0;
-if (dx !== 0 || dy !== 0) {
-  ducks.angle = atan2(dy, dx);
-}
+
 if (keys[87]) dy -= ducks.speed; // W
 if (keys[83]) dy += ducks.speed; // S
 if (keys[65]) dx -= ducks.speed; // A
 if (keys[68]) dx += ducks.speed; // D
 
-if (dx !== 0 && dy !== 0) {
-  dx *= 0.7;
-  dy *= 0.7;
-}
+let nx = ducks.x + dx;
+if (!blocked(nx, ducks.y)) ducks.x = nx;
+
+let ny = ducks.y + dy;
+if (!blocked(ducks.x, ny)) ducks.y = ny;
+  let moved = false;
 
 let nx = ducks.x + dx;
 if (!blocked(nx, ducks.y)) {
   ducks.x = nx;
+  moved = true;
 }
 
 let ny = ducks.y + dy;
 if (!blocked(ducks.x, ny)) {
   ducks.y = ny;
+  moved = true;
 }
-  if (ducks.U) { if (ducks.L) { ducks.d=lerp(ducks.d,-180,0.1); } else { ducks.d=lerp(ducks.d,180,0.1); } }
-  if (ducks.D) { ducks.d=lerp(ducks.d,0,0.1);   }
-  if (ducks.L) { ducks.d=lerp(ducks.d,-90,0.1); }
-  if (ducks.R) { ducks.d=lerp(ducks.d,90,0.1);  }
+
+ducks.walking = moved;
+  
+ if (dx !== 0 || dy !== 0) {
+  ducks.d = atan2(dy, dx));
+}
   if (keys[32]) {
     if (ducks.stamina > 1) { ducks.speed=4; } else { ducks.speed=2; }
     if (ducks.stamina > 0) { ducks.stamina-=0.2; }
@@ -406,7 +411,7 @@ var indoorObstacles = [
 ];
 
 function carrot() {
-  carrott.ang = atan2(ducks.x, ducks.y-30);
+  carrott.ang = atan2(ducks.x, ducks.y-30));
   push();
   scale(carrott.sz);
   stroke(0); strokeWeight(3);
@@ -623,7 +628,6 @@ cam.y = lerp(cam.y, -ducks.y, 0.1);
   console.log(ducks.x, ducks.y);
   push();
 translate(cam.x + 300, cam.y + 300);
-  rotate(ducks.angle);
   honk();
 duck(ducks.x, ducks.y);
   pop();
@@ -721,10 +725,7 @@ cam.y = -ducks.y;
       }
     }
   }
-  push();
-  rotate(ducks.angle);
   honk();
-  pop();
   emitMove();
 
   noStroke(); fill(255,153,0);
