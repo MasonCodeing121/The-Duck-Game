@@ -351,12 +351,7 @@ if (keys[83]) dy += ducks.speed; // S
 if (keys[65]) dx -= ducks.speed; // A
 if (keys[68]) dx += ducks.speed; // D
 
-let nx = ducks.x + dx;
-if (!blocked(nx, ducks.y)) ducks.x = nx;
-
-let ny = ducks.y + dy;
-if (!blocked(ducks.x, ny)) ducks.y = ny;
-  let moved = false;
+let moved = false;
 
 let nx = ducks.x + dx;
 if (!blocked(nx, ducks.y)) {
