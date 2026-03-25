@@ -377,12 +377,12 @@ function ducklol(x, y, r, sz) {
 var carrott   = { ang:0, sz:1 };
 
 // ─── Chest & Quack Power ──────────────────────────────────────────────────────
-var chestState   = { opened: false, showPopup: false };
+var chestState   = { opened: false, showPopup: false, openFrame: 0, openTick: 0 };
 var seismicWaves = [];
 var quackTimer   = 0;
 
 const chestImg = new Image();
-chestImg.src   = 'chest-sheet.jpg';
+chestImg.src   = 'chest-sheet.png';
 
 const quackAudio = new Audio('quack.mp3');
 quackAudio.preload = 'auto';
@@ -412,7 +412,10 @@ function loadGame() {
     if (s.stamina    !== undefined) ducks.stamina    = s.stamina;
     if (s.hasQuack   !== undefined) ducks.hasQuack   = s.hasQuack;
     if (s.carrotSz   !== undefined) carrott.sz       = s.carrotSz;
-    if (s.chestOpened!== undefined) chestState.opened = s.chestOpened;
+    if (s.chestOpened!== undefined) {
+      chestState.opened    = s.chestOpened;
+      if (s.chestOpened) chestState.openFrame = 3;
+    }
   } catch(e) {}
 }
 
@@ -636,15 +639,17 @@ for (var i=0; i<jurassic_grassusses.length; i++) {
 
 var intro_timer = 1000;
 var scene2b     = "menu";
-// ─── Draw chest sprite from sheet (top-left = closed, bottom-right = open) ───
-function drawChestSprite(x, y, open) {
+// ─── Draw chest sprite: 4-frame sheet (row-major, 2 cols × 2 rows)
+//   frame 0 = top-left (closed)   frame 1 = top-right (cracking)
+//   frame 2 = bottom-left (opening)   frame 3 = bottom-right (fully open)
+function drawChestSprite(x, y) {
   if (!chestImg.complete || chestImg.naturalWidth === 0) return;
   const sw = chestImg.naturalWidth  / 2;
   const sh = chestImg.naturalHeight / 2;
-  const sx = open ? sw : 0;
-  const sy = open ? sh : 0;
-  const dw = 100, dh = 100;
-  ctx.drawImage(chestImg, sx, sy, sw, sh, x - dw/2, y - dh/2, dw, dh);
+  const col = chestState.openFrame % 2;
+  const row = Math.floor(chestState.openFrame / 2);
+  const dw = 110, dh = 110;
+  ctx.drawImage(chestImg, col * sw, row * sh, sw, sh, x - dw/2, y - dh/2, dw, dh);
 }
 
 // ─── BotW-style item popup ────────────────────────────────────────────────────
@@ -694,7 +699,18 @@ function treeScene() {
 
   // Chest (centre of room, slightly above duck spawn)
   const chestX = 300, chestY = 210;
-  drawChestSprite(chestX, chestY, chestState.opened);
+  drawChestSprite(chestX, chestY);
+
+  // Advance opening animation (one frame every 10 ticks ≈ smooth ~6-step open)
+  if (chestState.opened && chestState.openFrame < 3) {
+    chestState.openTick++;
+    if (chestState.openTick % 10 === 0) {
+      chestState.openFrame++;
+      if (chestState.openFrame >= 3) {
+        chestState.showPopup = true;
+      }
+    }
+  }
 
   // Update duck movement and draw directly
   honk();
@@ -710,9 +726,10 @@ function treeScene() {
     textSize(24); fill(0); textFont("Courier");
     text('"E" to open', 300, 480);
     if (keys[69] && frameCount % 20 < 1) {
-      chestState.opened   = true;
-      chestState.showPopup = true;
-      ducks.hasQuack      = true;
+      chestState.opened    = true;
+      chestState.openFrame = 0;
+      chestState.openTick  = 0;
+      ducks.hasQuack       = true;
       saveGame();
     }
   }
@@ -880,8 +897,8 @@ function menu() {
   textSize(190); text("🦆",350,120);
   textSize(20); fill(0); text("click duck to start",147,224); fill(255); text("click duck to start",147,226);
   textSize(25);
-  fill(0);   text("HTML/CSS by Pear256",110,561); text("by ƬӨΣKПΣΣ",101,571);
-  fill(255); text("HTML/CSS by Pear256",110,563); text("by ƬӨΣKПΣΣ",101,573);
+  fill(0);   text("HTML/CSS by Pear256",175,540); text("by ƬӨΣKПΣΣ",150,563);
+  fill(255); text("HTML/CSS by Pear256",175,542); text("by ƬӨΣKПΣΣ",150,565);
   push(); translate(310,301); rotate(-34);
   if (dist(mouseX,mouseY,310,301) < 35) {
     scale(1.2);
