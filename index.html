@@ -126,21 +126,41 @@
       box-shadow: 0 6px 22px #2226;
     }
     h3 { color: white; margin-top: 10px; user-select: none; }
+
+    #canvas-scale-wrap {
+      position: relative;
+      width: 600px;
+      height: 600px;
+      display: inline-block;
+    }
+
+    #canvas-wrap:-webkit-full-screen,
+    #canvas-wrap:-ms-fullscreen,
+    #canvas-wrap:fullscreen {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      width: 100vw !important;
+      height: 100vh !important;
+      background: #111;
+    }
   </style>
 </head>
 <body>
   <div id="canvas-wrap">
-    <canvas id="gameCanvas"></canvas>
-    <div id="room-overlay">
-      <label for="roomInput">Room:</label>
-      <input id="roomInput" type="text" value="duck-game" maxlength="24" spellcheck="false">
+    <div id="canvas-scale-wrap">
+      <canvas id="gameCanvas"></canvas>
+      <div id="room-overlay">
+        <label for="roomInput">Room:</label>
+        <input id="roomInput" type="text" value="duck-game" maxlength="24" spellcheck="false">
+      </div>
+      <div id="name-overlay">
+        <label for="nameInput">Name:</label>
+        <input id="nameInput" type="text" value="Duck" maxlength="16" spellcheck="false">
+      </div>
+      <button id="restartBtn">Restart</button>
+      <div id="net-status">connecting…</div>
     </div>
-    <div id="name-overlay">
-      <label for="nameInput">Name:</label>
-      <input id="nameInput" type="text" value="Duck" maxlength="16" spellcheck="false">
-    </div>
-    <button id="restartBtn">Restart</button>
-    <div id="net-status">connecting…</div>
   </div>
 
   <button id="fullscreenBtn" class="fullscreen-btn" title="Play in fullscreen">
@@ -162,10 +182,24 @@
 
   <script src="sketch.js"></script>
   <script>
+    const _cWrap  = document.getElementById('canvas-wrap');
+    const _cScale = document.getElementById('canvas-scale-wrap');
+
+    function _applyFsScale() {
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        const s = Math.min(screen.width / 600, screen.height / 600);
+        _cScale.style.transformOrigin = 'center center';
+        _cScale.style.transform = 'scale(' + s + ')';
+      } else {
+        _cScale.style.transform = '';
+      }
+    }
+    document.addEventListener('fullscreenchange',       _applyFsScale);
+    document.addEventListener('webkitfullscreenchange', _applyFsScale);
+
     document.getElementById('fullscreenBtn').addEventListener('click', () => {
-      const c = document.getElementById('gameCanvas');
-      if (c.requestFullscreen) c.requestFullscreen();
-      else if (c.webkitRequestFullscreen) c.webkitRequestFullscreen();
+      if (_cWrap.requestFullscreen)       _cWrap.requestFullscreen();
+      else if (_cWrap.webkitRequestFullscreen) _cWrap.webkitRequestFullscreen();
     });
     document.oncontextmenu = () => true;
   </script>
