@@ -1054,6 +1054,9 @@ function draw() {
         bgPause();
       }
       if (scene === "how") {
+        if (roomOverlay)  roomOverlay.style.display  = 'none';
+        if (nameOverlay)  nameOverlay.style.display  = 'none';
+        if (restartBtn)   restartBtn.style.display   = 'none';
         bgPause();
       }
     }
