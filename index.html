@@ -5,10 +5,10 @@
   <title>The Duck Game</title>
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <style>
-    html, body { margin: 0; padding: 0; background: #7B56F5; }
+    html, body { margin: 0; padding: 0; background: #333; }
     body { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
     #canvas-wrap { position: relative; display: inline-block; }
-    canvas { display: block; box-shadow: 0 0 40px #3a1d8a88; border-radius: 18px; background: #7B56F5; }
+    canvas { display: block; box-shadow: 0 0 40px #3a1d8a88; border-radius: 18px; background: #000000; }
 
     #room-overlay {
       position: absolute;
@@ -140,10 +140,29 @@
       display: flex !important;
       align-items: center;
       justify-content: center;
-      width: 100vw !important;
-      height: 100vh !important;
-      background: #7B56F5;
+
+      width: 100vw;
+      height: 100vh;
+
+      margin: 0;
     }
+    #canvas-wrap:fullscreen #canvas-scale-wrap {
+      margin: auto;
+      margin-top:65px;
+    }
+    #canvas-wrap:fullscreen::backdrop {
+      background: rgb(123,86,245);
+    }
+
+    #canvas-wrap:-webkit-full-screen::backdrop {
+      background: rgb(123,86,245);
+    }
+    #canvas-scale-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+   
   </style>
 </head>
 <body>
@@ -152,7 +171,7 @@
       <canvas id="gameCanvas"></canvas>
       <div id="room-overlay">
         <label for="roomInput">Room:</label>
-        <input id="roomInput" type="text" value="duck-game" maxlength="24" spellcheck="false">
+        <input id="roomInput" type="text" value="duck-game" maxlength="24" spellcheck="false" id="name-overlay">
       </div>
       <div id="name-overlay">
         <label for="nameInput">Name:</label>
@@ -189,7 +208,10 @@
       if (document.fullscreenElement || document.webkitFullscreenElement) {
         // Use a brief delay so the browser has finished resizing before we measure
         setTimeout(function() {
-          const s = Math.min(window.innerWidth / 600, window.innerHeight / 600);
+          const s = Math.min(
+            window.innerHeight / 465,
+            window.innerWidth / 465
+          );
           _cScale.style.transformOrigin = 'center center';
           _cScale.style.transform = 'scale(' + s + ')';
         }, 50);
