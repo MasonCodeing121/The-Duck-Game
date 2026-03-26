@@ -15,9 +15,12 @@ let mySocketId   = null;
 let otherPlayers = {};
 let currentRoom  = null;
 
-const netStatus = document.getElementById('net-status');
-const roomInput = document.getElementById('roomInput');
+const netStatus   = document.getElementById('net-status');
+const roomInput   = document.getElementById('roomInput');
 const roomOverlay = document.getElementById('room-overlay');
+const nameInput   = document.getElementById('nameInput');
+const nameOverlay = document.getElementById('name-overlay');
+const restartBtn  = document.getElementById('restartBtn');
 
 socket.on('connect', () => {
   mySocketId = socket.id;
@@ -48,7 +51,7 @@ socket.on('room:player_left', (data) => {
 function joinRoom(name) {
   currentRoom = name;
   // UPDATED: Matches the 'room:join' listener in your server.js
-  socket.emit('room:join', { roomId: name, playerName: "Duck" });
+  socket.emit('room:join', { roomId: name, playerName: nameInput ? nameInput.value.trim() || 'Duck' : 'Duck' });
 }
 
 // Emit local player state to server (called each frame while in game)
@@ -395,7 +398,8 @@ function saveGame() {
       pancakes: ducks.pancakes, stamina: ducks.stamina,
       hasQuack: ducks.hasQuack,
       carrotSz: carrott.sz,
-      chestOpened: chestState.opened
+      chestOpened: chestState.opened,
+      playerName: nameInput ? nameInput.value : 'Duck'
     }));
   } catch(e) {}
 }
@@ -416,7 +420,21 @@ function loadGame() {
       chestState.opened    = s.chestOpened;
       if (s.chestOpened) chestState.openFrame = 3;
     }
+    if (s.playerName !== undefined && nameInput) nameInput.value = s.playerName;
   } catch(e) {}
+}
+
+function restartGame() {
+  localStorage.removeItem('duckgame_save');
+  ducks.x = 0; ducks.y = 150; ducks.d = -49;
+  ducks.pancakes = 0; ducks.stamina = 100; ducks.hasQuack = false;
+  carrott.sz = 1;
+  chestState.opened = false; chestState.showPopup = false;
+  chestState.openFrame = 0; chestState.openTick = 0;
+}
+
+if (restartBtn) {
+  restartBtn.addEventListener('click', restartGame);
 }
 
 var obstacles = [
@@ -1003,12 +1021,17 @@ function draw() {
       // When entering the game, join the room
       if (scene === "game") {
         const roomName = roomInput.value.trim() || 'duck-game';
-        if (roomOverlay) roomOverlay.style.display = 'none';
+        if (roomOverlay)  roomOverlay.style.display  = 'none';
+        if (nameOverlay)  nameOverlay.style.display  = 'none';
+        if (restartBtn)   restartBtn.style.display   = 'none';
         joinRoom(roomName);
+        saveGame();
       }
-      // Show overlay again if going back to menu
+      // Show overlays again if going back to menu
       if (scene === "menu") {
-        if (roomOverlay) roomOverlay.style.display = 'flex';
+        if (roomOverlay)  roomOverlay.style.display  = 'flex';
+        if (nameOverlay)  nameOverlay.style.display  = 'flex';
+        if (restartBtn)   restartBtn.style.display   = 'block';
       }
     }
   }

@@ -42,6 +42,53 @@
     }
     #roomInput:focus { border-color: #c4b5fd; }
 
+    #name-overlay {
+      position: absolute;
+      top: 272px;
+      left: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,0,0,0.55);
+      border-radius: 12px;
+      padding: 8px 16px;
+      pointer-events: all;
+    }
+    #name-overlay label {
+      color: #fff;
+      font-family: 'Courier', monospace;
+      font-size: 0.95em;
+      white-space: nowrap;
+    }
+    #nameInput {
+      font-family: 'Courier', monospace;
+      font-size: 0.95em;
+      border: 2px solid #8465f7;
+      border-radius: 7px;
+      padding: 4px 10px;
+      background: #1a1a2e;
+      color: #fff;
+      outline: none;
+      width: 100px;
+    }
+    #nameInput:focus { border-color: #c4b5fd; }
+
+    #restartBtn {
+      position: absolute;
+      top: 330px;
+      left: 15px;
+      font-family: 'Courier', monospace;
+      font-size: 0.95em;
+      background: rgba(160,40,40,0.75);
+      color: #fff;
+      border: 2px solid #f87171;
+      border-radius: 10px;
+      padding: 7px 20px;
+      cursor: pointer;
+      pointer-events: all;
+    }
+    #restartBtn:hover { background: rgba(220,70,70,0.9); }
+
     #net-status {
       position: absolute;
       top: 10px;
@@ -88,6 +135,11 @@
       <label for="roomInput">Room:</label>
       <input id="roomInput" type="text" value="duck-game" maxlength="24" spellcheck="false">
     </div>
+    <div id="name-overlay">
+      <label for="nameInput">Name:</label>
+      <input id="nameInput" type="text" value="Duck" maxlength="16" spellcheck="false">
+    </div>
+    <button id="restartBtn">Restart</button>
     <div id="net-status">connecting…</div>
   </div>
 
