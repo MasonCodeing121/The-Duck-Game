@@ -187,9 +187,12 @@
 
     function _applyFsScale() {
       if (document.fullscreenElement || document.webkitFullscreenElement) {
-        const s = Math.min(screen.width / 600, screen.height / 600);
-        _cScale.style.transformOrigin = 'center center';
-        _cScale.style.transform = 'scale(' + s + ')';
+        // Use a brief delay so the browser has finished resizing before we measure
+        setTimeout(function() {
+          const s = Math.min(window.innerWidth / 600, window.innerHeight / 600);
+          _cScale.style.transformOrigin = 'center center';
+          _cScale.style.transform = 'scale(' + s + ')';
+        }, 50);
       } else {
         _cScale.style.transform = '';
       }
