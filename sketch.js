@@ -68,7 +68,8 @@ function emitMove() {
         x: ducks.x, y: ducks.y, d: ducks.d,
         r1: ducks.r1, r2: ducks.r2, r3: ducks.r3,
         r4: ducks.r4, r5: ducks.r5, r6: ducks.r6,
-        walking: ducks.walking
+        walking: ducks.walking,
+        name: nameInput ? (nameInput.value.trim() || 'Duck') : 'Duck'
     }
   });
 }
@@ -223,7 +224,11 @@ canvas.addEventListener('mousemove', e => {
   mouseY = (e.clientY - r.top)  * (canvas.height / r.height);
 });
 canvas.addEventListener('click', () => { clicked = true; });
-window.addEventListener('keydown', e => { keys[e.keyCode] = true;  e.preventDefault(); });
+window.addEventListener('keydown', e => {
+  keys[e.keyCode] = true;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag !== 'INPUT' && tag !== 'TEXTAREA') e.preventDefault();
+});
 window.addEventListener('keyup',   e => { keys[e.keyCode] = false; });
 
 // ─── Frame Counter ────────────────────────────────────────────────────────────
@@ -830,7 +835,7 @@ textSize(30); textFont("Courier"); fill(153, 153, 153); noStroke();
   for (var i=0; i<allDucks.length; i++) {
     var d = allDucks[i];
     if (d.isLocal) { duck(ducks.x, ducks.y); }
-    else { drawOtherDuck(d.p.x, d.p.y, d.p, d.id.slice(0,6)); }
+    else { drawOtherDuck(d.p.x, d.p.y, d.p, d.p.name || d.id.slice(0,6)); }
   }
 
   // ── Quack: 3 lines from bill ──────────────────────────────────────────────
