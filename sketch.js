@@ -1000,8 +1000,9 @@ function how() {
   textSize(27); fill(0);
   text("1. Be duck\n\n2. Collect pancakes,\n3. Feed said pancakes to carrot,\n4. Watch carrot\ngrow\n5. Repeat\n\n[W]\n[A][S][D]\nto move\n\n[space] to sprint",300,190);
   fill(255);
-  text("1. Be duck\n\n2. Collect pancakes,\n3. Feed said pancakes to carrot,\n4. Watch carrot\ngrow\n5. Repeat\n\n[W]\n[A][S][D]\nto move\n\n[space] to sprint",300,190);
+  text("1. Be duck\n\n2. Collect pancakes,\n3. Feed said pancakes to carrot,\n4. Watch carrot\ngrow\n5. Repeat\n\n[W]\n[A][S][D]\nto move\n\n[space] to sprint",300,189);
   fill(0);
+  textSize(15);
   text("the following steps are optional:",308,248);
   fill(255); textSize(15);
   text("the following steps are optional:",308,250);
