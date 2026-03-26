@@ -451,7 +451,7 @@ if (restartBtn) {
 }
 
 var obstacles = [
-  { x:270, y:340, r:120 },
+  { x:300, y:340, r:120 },
   { x:616, y:510, r:120 }
 ];
 var indoorObstacles = [
