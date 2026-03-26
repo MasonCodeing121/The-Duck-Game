@@ -395,6 +395,14 @@ chestImg.src   = 'chest-sheet.png';
 const quackAudio = new Audio('quack.mp3');
 quackAudio.preload = 'auto';
 
+const bgMusic = new Audio('bgmusic.mp3');
+bgMusic.loop   = true;
+bgMusic.volume = 0.6;
+bgMusic.preload = 'auto';
+
+function bgPlay()  { if (bgMusic.paused) bgMusic.play().catch(function(){}); }
+function bgPause() { if (!bgMusic.paused) bgMusic.pause(); }
+
 // ─── Save / Load ──────────────────────────────────────────────────────────────
 function saveGame() {
   try {
@@ -444,14 +452,14 @@ if (restartBtn) {
 
 var obstacles = [
   { x:270, y:340, r:120 },
-  { x:616, y:260, r:120 }
+  { x:616, y:510, r:120 }
 ];
 var indoorObstacles = [
   { x: 300, y: 0,   w: 600, h: 20 },  // top
   { x: 300, y: 600, w: 600, h: 20 },  // bottom
   { x: 0,   y: 300, w: 20,  h: 600 }, // left
   { x: 600, y: 300, w: 20,  h: 600 }, // right
-  { x: 300, y: 210, w: 80,  h: 60  }  // chest
+  { x: 300, y: 210, w: 80,  h: 65  }  // chest
 ];
 
 function carrot() {
@@ -729,7 +737,10 @@ function drawBotWPopup() {
 
   // Description
   textSize(13); fill(190, 210, 255);
-  text("ex:hi", 300, 298);
+  text("When used, it can stun\n nearby enemies and damage them.", 300, 298);
+  textSize(8);
+  fill(210, 175, 55);
+  text("Can be used by clicking anywhere", 300, 251);
 
   // Dismiss hint
   textSize(11); fill(140, 140, 160);
@@ -795,6 +806,7 @@ function treeScene() {
   if (keys[27]) {
     saveGame();
     scene  = "game";
+    bgPlay();
     ducks.x = 0;
     ducks.y = 150;
   }
@@ -892,6 +904,7 @@ ducks.y = 300;
 cam.x = -ducks.x;
 cam.y = -ducks.y;
         scene = "treeScene";
+        bgPause();
       }
     }
   }
@@ -1031,12 +1044,17 @@ function draw() {
         if (restartBtn)   restartBtn.style.display   = 'none';
         joinRoom(roomName);
         saveGame();
+        bgPlay();
       }
       // Show overlays again if going back to menu
       if (scene === "menu") {
         if (roomOverlay)  roomOverlay.style.display  = 'flex';
         if (nameOverlay)  nameOverlay.style.display  = 'flex';
         if (restartBtn)   restartBtn.style.display   = 'block';
+        bgPause();
+      }
+      if (scene === "how") {
+        bgPause();
       }
     }
   }
