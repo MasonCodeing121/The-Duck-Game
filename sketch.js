@@ -451,7 +451,7 @@ if (restartBtn) {
 }
 
 var obstacles = [
-  { x:270, y:340, r:120 },
+  { x:300, y:340, r:120 },
   { x:616, y:510, r:120 }
 ];
 var indoorObstacles = [
@@ -819,7 +819,7 @@ function game() {
   shake_time--;
   push();
   translate(cam.x+300+shake, cam.y+400+shake);
-  noStroke(); fill(169,214,182); rect(0,0,3000,3000);
+  noStroke(); fill(169,214,182); rect(0,0,2000,2000);
   for (var i=0; i<jurassic_grassusses.length; i++) { grass(jurassic_grassusses[i].x,jurassic_grassusses[i].y); }
 
   function drawLeaves(tx,ty,sc) {
