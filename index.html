@@ -345,6 +345,11 @@
 
       history.forEach(function(m) { appendMsg(m.author, m.text, false); });
 
+      // Hook for sketch.js to deliver incoming room chat messages
+      window._chatReceive = function(author, text) {
+        appendMsg(author, text, true);
+      };
+
       toggleBtn.addEventListener('click', function() {
         panel.classList.toggle('open');
         if (panel.classList.contains('open')) msgBox.scrollTop = msgBox.scrollHeight;
@@ -355,7 +360,8 @@
         if (!text) return;
         var nameEl = document.getElementById('nameInput');
         var author = (nameEl && nameEl.value.trim()) ? nameEl.value.trim() : 'Duck';
-        appendMsg(author, text, true);
+        appendMsg(author, text, true);       // show locally immediately
+        if (window.sendChatToRoom) window.sendChatToRoom(author, text);  // relay to room
         input.value = '';
       }
 
