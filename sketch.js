@@ -1018,6 +1018,30 @@ function draw() {
       textFont("Comic Sans MS"); textSize(15); fill(0); noStroke();
       text("Meters from carrot: "+round(dc/50),93,46);
       text("Carrot size: "+round(carrott.sz),93,29);
+
+      // ── Menu button ────────────────────────────────────────────────────────
+      // Drawn in screen-space (no camera transform) at top-right of the canvas.
+      // 1. Check if the mouse is hovering inside the button rectangle.
+      // 2. Draw a rounded-rect background, darker when idle, lighter on hover.
+      // 3. Draw the label on top.
+      // 4. If hovered AND clicked this frame → save, pause music, start the
+      //    intro-spin animation that transitions back to the menu scene.
+      var _mbx = 557, _mby = 18, _mbw = 76, _mbh = 22;
+      var _mbHover = mouseX > _mbx-_mbw/2 && mouseX < _mbx+_mbw/2 &&
+                     mouseY > _mby-_mbh/2 && mouseY < _mby+_mbh/2;
+      noStroke();
+      fill(_mbHover ? 120 : 60, _mbHover ? 70 : 30, _mbHover ? 220 : 160,
+           _mbHover ? 230 : 180);
+      rect(_mbx, _mby, _mbw, _mbh, 7);
+      fill(255); textFont("Courier"); textSize(12);
+      text("Menu", _mbx, _mby);
+      if (_mbHover && clicked) {
+        saveGame(); bgPause();
+        if (roomOverlay) roomOverlay.style.display = 'flex';
+        if (nameOverlay) nameOverlay.style.display = 'flex';
+        if (restartBtn)  restartBtn.style.display  = 'block';
+        intro_timer = 110; scene2b = "menu";
+      }
       break;
     case "treeScene": 
       treeScene(); 
