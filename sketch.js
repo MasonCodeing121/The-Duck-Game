@@ -225,9 +225,11 @@ canvas.addEventListener('mousemove', e => {
 });
 canvas.addEventListener('click', () => { clicked = true; });
 window.addEventListener('keydown', e => {
-  keys[e.keyCode] = true;
   const tag = document.activeElement && document.activeElement.tagName;
-  if (tag !== 'INPUT' && tag !== 'TEXTAREA') e.preventDefault();
+  if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
+    keys[e.keyCode] = true;
+    e.preventDefault();
+  }
 });
 window.addEventListener('keyup',   e => { keys[e.keyCode] = false; });
 
@@ -695,6 +697,62 @@ for (var i=0; i<jurassic_grassusses.length; i++) {
   if (dist(jurassic_grassusses[i].x,jurassic_grassusses[i].y,0,0) < 300) { jurassic_grassusses.splice(i,1); }
 }
 
+// ─── Tree Image (client-side shadow strip) ────────────────────────────────────
+var _treeReady  = false;
+var _treeCanvas = document.createElement('canvas');
+var _treeCtx    = _treeCanvas.getContext('2d');
+var _treeRawImg = new Image();
+_treeRawImg.onload = function() {
+  var W = _treeRawImg.naturalWidth, H = _treeRawImg.naturalHeight;
+  _treeCanvas.width = W; _treeCanvas.height = H;
+  _treeCtx.drawImage(_treeRawImg, 0, 0);
+  var id = _treeCtx.getImageData(0, 0, W, H), px = id.data;
+  // Remove any pixel where R≈G≈B (shadow / gray) and brightness ≤ 145.
+  // Real tree pixels have strong green or brown hue so their channel
+  // deviation is well above the threshold.
+  for (var i = 0; i < px.length; i += 4) {
+    if (px[i+3] === 0) continue;
+    var r = px[i], g = px[i+1], b = px[i+2];
+    var dev = Math.max(Math.abs(r-g), Math.abs(g-b), Math.abs(r-b));
+    if (dev < 30 && r < 150) px[i+3] = 0;
+  }
+  _treeCtx.putImageData(id, 0, 0);
+  _treeReady = true;
+};
+_treeRawImg.src = 'tree.png';
+
+// ─── Random Tree Positions ─────────────────────────────────────────────────
+// Kept off-limits zones: treehouse, house, carrot, spawn area.
+// Each tree also added as a circular obstacle so the duck can't pass through.
+var trees = [];
+(function() {
+  var avoid = [
+    { x:270,  y:340, r:200 },  // treehouse + big tree
+    { x:616,  y:222, r:190 },  // house
+    { x:0,    y:30,  r:220 },  // carrot
+    { x:0,    y:150, r:180 }   // spawn
+  ];
+  var attempts = 0;
+  while (trees.length < 16 && attempts < 2000) {
+    attempts++;
+    var tx = random(-950, 950), ty = random(-950, 950);
+    var ok = true;
+    for (var j = 0; j < avoid.length; j++) {
+      if (dist(tx, ty, avoid[j].x, avoid[j].y) < avoid[j].r) { ok = false; break; }
+    }
+    if (ok) {
+      for (var k = 0; k < trees.length; k++) {
+        if (dist(tx, ty, trees[k].x, trees[k].y) < 160) { ok = false; break; }
+      }
+    }
+    if (ok) trees.push({ x: tx, y: ty });
+  }
+  // Register each tree as a collidable obstacle
+  for (var i = 0; i < trees.length; i++) {
+    obstacles.push({ x: trees[i].x, y: trees[i].y, r: 52 });
+  }
+})();
+
 var intro_timer = 1000;
 var scene2b     = "menu";
 // ─── Draw chest sprite: 4-frame sheet (row-major, 2 cols × 2 rows)
@@ -835,6 +893,15 @@ textSize(30); textFont("Courier"); fill(153, 153, 153); noStroke();
   text("Welcome to The Duck Game!",-173,240);
   serve_pancakes(20,"back");
   dirt();
+
+  // Draw random trees in Y-order (always behind ducks for simplicity)
+  if (_treeReady) {
+    var _st = trees.slice().sort(function(a,b){return a.y-b.y;});
+    for (var _ti=0; _ti<_st.length; _ti++) {
+      var _tw=110, _th=110;
+      ctx.drawImage(_treeCanvas, _st[_ti].x-_tw/2, _st[_ti].y-_th*0.85, _tw, _th);
+    }
+  }
 
   // Collect all ducks (local + remote) and sort by Y for depth
   var allDucks = [{ isLocal:true, x:ducks.x, y:ducks.y }];
@@ -1026,7 +1093,7 @@ function draw() {
       // 3. Draw the label on top.
       // 4. If hovered AND clicked this frame → save, pause music, start the
       //    intro-spin animation that transitions back to the menu scene.
-      var _mbx = 557, _mby = 18, _mbw = 76, _mbh = 22;
+      var _mbx = 557, _mby = 40, _mbw = 76, _mbh = 22;
       var _mbHover = mouseX > _mbx-_mbw/2 && mouseX < _mbx+_mbw/2 &&
                      mouseY > _mby-_mbh/2 && mouseY < _mby+_mbh/2;
       noStroke();
