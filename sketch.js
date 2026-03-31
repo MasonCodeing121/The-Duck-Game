@@ -40,9 +40,26 @@ socket.on('disconnect', () => {
 // the game client, we listen for 'game:event' to update other players.
 socket.on('game:event', (data) => {
     if (data.senderId !== socket.id) {
-        otherPlayers[data.senderId] = data.payload;
+        if (data.type === 'chat') {
+            // Route to the chat UI if it's listening
+            if (window._chatReceive) window._chatReceive(data.author, data.text);
+        } else {
+            otherPlayers[data.senderId] = data.payload;
+        }
     }
 });
+
+// Send a chat message to everyone else in the current room
+function sendChatToRoom(author, text) {
+    if (!currentRoom) return;
+    socket.emit('game:event', {
+        roomId: currentRoom,
+        type: 'chat',
+        author: author,
+        text: text,
+        payload: {}   // kept so old handlers don't throw
+    });
+}
 
 socket.on('room:player_left', (data) => {
     delete otherPlayers[data.player.id];
@@ -894,15 +911,6 @@ textSize(30); textFont("Courier"); fill(153, 153, 153); noStroke();
   serve_pancakes(20,"back");
   dirt();
 
-  // Draw random trees in Y-order (always behind ducks for simplicity)
-  if (_treeReady) {
-    var _st = trees.slice().sort(function(a,b){return a.y-b.y;});
-    for (var _ti=0; _ti<_st.length; _ti++) {
-      var _tw=110, _th=110;
-      ctx.drawImage(_treeCanvas, _st[_ti].x-_tw/2, _st[_ti].y-_th*0.85, _tw, _th);
-    }
-  }
-
   // Collect all ducks (local + remote) and sort by Y for depth
   var allDucks = [{ isLocal:true, x:ducks.x, y:ducks.y }];
   for (const [id,p] of Object.entries(otherPlayers)) {
@@ -915,6 +923,15 @@ textSize(30); textFont("Courier"); fill(153, 153, 153); noStroke();
     var d = allDucks[i];
     if (d.isLocal) { duck(ducks.x, ducks.y); }
     else { drawOtherDuck(d.p.x, d.p.y, d.p, d.p.name || d.id.slice(0,6)); }
+  }
+
+  // Draw random trees in Y-order AFTER ducks so trees appear in front
+  if (_treeReady) {
+    var _st = trees.slice().sort(function(a,b){return a.y-b.y;});
+    for (var _ti=0; _ti<_st.length; _ti++) {
+      var _tw=220, _th=220;
+      ctx.drawImage(_treeCanvas, _st[_ti].x-_tw/2, _st[_ti].y-_th*0.85, _tw, _th);
+    }
   }
 
   // ── Quack: 3 lines from bill ──────────────────────────────────────────────
