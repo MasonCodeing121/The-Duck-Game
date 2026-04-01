@@ -1217,6 +1217,128 @@ var trees = [];
   }
 })();
 
+// ─── Traveller NPC ─────────────────────────────────────────────────────────────
+// Sprite sheet: 12 directional frames (1 per 30°), each 64 × 96 px, 1-row layout.
+// Angle convention matches the game: 0° = East, 90° = South (toward camera),
+// 180° = West, 270° = North (away from camera).
+var TRAV_FW = 64, TRAV_FH = 96;
+var _travReady = false;
+var _travSheet = document.createElement('canvas');
+_travSheet.width  = TRAV_FW * 12;
+_travSheet.height = TRAV_FH;
+
+var _travSrc = new Image();
+_travSrc.onload = function() {
+  // -- strip the black background --
+  var tmp = document.createElement('canvas');
+  tmp.width = _travSrc.naturalWidth; tmp.height = _travSrc.naturalHeight;
+  var tc = tmp.getContext('2d');
+  tc.drawImage(_travSrc, 0, 0);
+  var id = tc.getImageData(0, 0, tmp.width, tmp.height), px = id.data;
+  for (var i = 0; i < px.length; i += 4) {
+    if (px[i] < 35 && px[i+1] < 35 && px[i+2] < 35) px[i+3] = 0;
+  }
+  tc.putImageData(id, 0, 0);
+
+  // -- build 12 directional frames --
+  var sc = _travSheet.getContext('2d');
+  var sw = tmp.width, sh = tmp.height;
+  for (var f = 0; f < 12; f++) {
+    var rad = f * 30 * Math.PI / 180;
+    var cosA = Math.cos(rad); // +1=E, -1=W
+    var sinA = Math.sin(rad); // +1=S(toward camera), -1=N(away)
+    var cx = f * TRAV_FW + TRAV_FW / 2;
+
+    // Width: full when S/N, compressed when E/W
+    var wScale = Math.max(0.22, Math.abs(sinA));
+    // Height: tallest when facing S (sinA=+1), shortest facing N (sinA=-1)
+    var hScale = 0.66 + 0.34 * (sinA + 1) / 2;
+    // Flip: mirror image for East-hemisphere so character faces the right way
+    var flipX = (cosA > 0) ? -1 : 1;
+    // Brightness: darker when facing away
+    var bri = 0.52 + 0.48 * (sinA + 1) / 2;
+
+    sc.save();
+    sc.translate(cx, TRAV_FH);
+    sc.filter = 'brightness(' + bri.toFixed(2) + ')';
+    sc.scale(flipX * (wScale * TRAV_FW / sw), hScale * TRAV_FH / sh);
+    sc.drawImage(tmp, -sw / 2, -sh);
+    sc.restore();
+  }
+  sc.filter = 'none';
+  _travReady = true;
+};
+_travSrc.src = 'traveller.jpg';
+
+// NPC state – top-right corner of the world square (x≈+820, y≈−820)
+var traveller = {
+  x: 820, y: -820,
+  homeX: 820, homeY: -820,
+  targetX: 820, targetY: -820,
+  d: 90,            // initial direction (facing south)
+  speed: 1.3,
+  patrolR: 150,     // patrol radius (world units)
+  waitTimer: 0,
+  frame: 3,         // sprite frame index (3 = 90° = South)
+  animTick: 0
+};
+
+// Reserve one dynamic-obstacle slot for the traveller's body
+// (position updated every frame in updateTraveller)
+obstacles.push({ x: traveller.x, y: traveller.y, r: 22, _trav: true });
+
+function updateTraveller() {
+  if (traveller.waitTimer > 0) { traveller.waitTimer--; return; }
+
+  var dx = traveller.targetX - traveller.x;
+  var dy = traveller.targetY - traveller.y;
+  if (dx * dx + dy * dy < 25) {
+    // Reached target – rest, then pick a new spot
+    traveller.waitTimer = Math.round(random(80, 200));
+    var ang = random(0, 360) * Math.PI / 180;
+    var r   = random(30, traveller.patrolR);
+    traveller.targetX = traveller.homeX + Math.cos(ang) * r;
+    traveller.targetY = traveller.homeY + Math.sin(ang) * r;
+  } else {
+    var len = Math.sqrt(dx * dx + dy * dy);
+    traveller.x += (dx / len) * traveller.speed;
+    traveller.y += (dy / len) * traveller.speed;
+    traveller.d = atan2(dy, dx);           // degrees, 0=E convention
+    traveller.animTick++;
+    // Map direction to sprite frame (every 8 ticks recalculate)
+    traveller.frame = Math.round(((traveller.d % 360) + 360) % 360 / 30) % 12;
+  }
+
+  // Keep dynamic obstacle in sync
+  for (var oi = 0; oi < obstacles.length; oi++) {
+    if (obstacles[oi]._trav) { obstacles[oi].x = traveller.x; obstacles[oi].y = traveller.y - 16; break; }
+  }
+}
+
+function drawTraveller() {
+  if (!_travReady) return;
+  var bob = (traveller.waitTimer === 0)
+    ? Math.abs(Math.sin(traveller.animTick * 0.18)) * 3 : 0;
+
+  ctx.drawImage(
+    _travSheet,
+    traveller.frame * TRAV_FW, 0, TRAV_FW, TRAV_FH,
+    traveller.x - TRAV_FW / 2,
+    traveller.y - TRAV_FH - bob,
+    TRAV_FW, TRAV_FH
+  );
+
+  // Name tag above the sprite
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 11px Courier';
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.fillRect(traveller.x - 30, traveller.y - TRAV_FH - bob - 17, 60, 14);
+  ctx.fillStyle = '#f5e6c0';
+  ctx.fillText('Traveller', traveller.x, traveller.y - TRAV_FH - bob - 6);
+  ctx.restore();
+}
+
 var intro_timer = 1000;
 var scene2b = "menu";
 // ─── Draw chest sprite: 4-frame sheet (row-major, 2 cols × 2 rows)
