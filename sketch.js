@@ -1190,7 +1190,7 @@ var trees = [];
     { x: 0, y: 150, r: 180 }, // spawn
   ];
   var attempts = 0;
-  while (trees.length < 16 && attempts < 2000) {
+  while (trees.length < 32 && attempts < 2000) {
     attempts++;
     var tx = random(-950, 950),
       ty = random(-950, 950);
@@ -1714,7 +1714,7 @@ function how() {
   text("Menu", 0, 0);
   textSize(125);
   fill(255);
-  text("⇦", -5, 4);
+  text("⇦", -5, 6);
   pop();
   textSize(50);
   fill(255);
@@ -1734,10 +1734,10 @@ function how() {
   );
   fill(0);
   textSize(15);
-  text("the following steps are optional:", 308, 248);
+  text("the following steps are optional:", 308, 245);
   fill(255);
   textSize(15);
-  text("the following steps are optional:", 308, 250);
+  text("the following steps are optional:", 308, 247);
 }
 
 function draw() {
