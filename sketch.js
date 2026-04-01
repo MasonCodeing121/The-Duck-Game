@@ -1611,34 +1611,36 @@ function game() {
 
 function menu() {
   background(123, 86, 245);
+
+  // ── Title (existing shadow style preserved) ────────────────────────
   textSize(50);
-  fill(0);
-  text("The", 150, 46);
-  fill(255);
-  text("The", 150, 48);
+  fill(0); text("The", 150, 46);
+  fill(255); text("The", 150, 48);
   textSize(103);
-  fill(0);
-  text("Duck", 150, 98);
-  fill(255);
-  text("Duck", 150, 100);
-  fill(0);
-  text("Game", 150, 168);
-  fill(255);
-  text("Game", 150, 170);
+  fill(0); text("Duck", 150, 98);
+  fill(255); text("Duck", 150, 100);
+  fill(0); text("Game", 150, 168);
+  fill(255); text("Game", 150, 170);
+
+  // Duck emoji
   textSize(190);
   text("🦆", 350, 120);
-  textSize(20);
-  fill(0);
-  text("click duck to start", 147, 224);
-  fill(255);
-  text("click duck to start", 147, 226);
-  textSize(25);
-  fill(0);
+
+  // ── "click duck to start" — Courier, small-caps style ─────────────
+  textFont("Courier"); textSize(14);
+  fill(0, 0, 0, 160);
+  text("▶  CLICK DUCK TO START  ◀", 150, 227);
+  fill(255, 255, 255, 200);
+  text("▶  CLICK DUCK TO START  ◀", 150, 226);
+
+  // ── Credits — Courier, subdued ─────────────────────────────────────
+  textSize(12);
+  fill(0, 0, 0, 120);
+  text("HTML/CSS by Pear256", 175, 541);
+  text("by ƬӨΣKПΣΣ", 150, 557);
+  fill(255, 255, 255, 130);
   text("HTML/CSS by Pear256", 175, 540);
-  text("by ƬӨΣKПΣΣ", 150, 563);
-  fill(255);
-  text("HTML/CSS by Pear256", 175, 542);
-  text("by ƬӨΣKПΣΣ", 150, 565);
+  text("by ƬӨΣKПΣΣ", 150, 556);
   push();
   translate(310, 301);
   rotate(-34);
@@ -1698,45 +1700,83 @@ function _drawBigDuck() {
 
 function how() {
   background(103, 81, 245);
+
+  // ── Back button (logic unchanged) ─────────────────────────────────
   push();
   translate(77, 551);
   if (dist(mouseX, mouseY, 77, 551) < 40) {
     scale(1.2);
-    if (clicked && scene === scene2b) {
-      intro_timer = 110;
-      scene2b = "menu";
-    }
+    if (clicked && scene === scene2b) { intro_timer = 110; scene2b = "menu"; }
   }
-  textSize(35);
-  fill(0);
-  text("Menu", 0, -2);
-  fill(255);
-  text("Menu", 0, 0);
-  textSize(125);
-  fill(255);
-  text("⇦", -5, 4);
+  textSize(35);  fill(0);   text("Menu", 0, -2);
+  textSize(35);  fill(255); text("Menu", 0, 0);
+  textSize(125); fill(255); text("⇦", -5, 4);
   pop();
-  textSize(50);
-  fill(255);
-  text("how?", 300, 44);
-  textSize(27);
-  fill(0);
-  text(
-    "1. Be duck\n\n2. Collect pancakes,\n3. Feed said pancakes to carrot,\n4. Watch carrot\ngrow\n5. Repeat\n\n[W]\n[A][S][D]\nto move\n\n[space] to sprint",
-    300,
-    190,
-  );
-  fill(255);
-  text(
-    "1. Be duck\n\n2. Collect pancakes,\n3. Feed said pancakes to carrot,\n4. Watch carrot\ngrow\n5. Repeat\n\n[W]\n[A][S][D]\nto move\n\n[space] to sprint",
-    300,
-    190,
-  );
-  fill(0);
-  text("the following steps are optional:", 308, 248);
-  fill(255);
-  textSize(15);
-  text("the following steps are optional:", 308, 250);
+
+  // ── Title ──────────────────────────────────────────────────────────
+  textFont("Courier"); textSize(38);
+  fill(0, 0, 0, 160); text("How to Play", 300, 44);
+  fill(255);           text("How to Play", 300, 42);
+
+  // thin divider
+  stroke(255, 255, 255, 70); strokeWeight(1);
+  line(80, 62, 520, 62);
+  noStroke();
+
+  // ── OBJECTIVE section label ────────────────────────────────────────
+  textSize(10); fill(255, 255, 255, 110);
+  text("O B J E C T I V E", 300, 80);
+
+  // Steps — one line each, consistent spacing
+  var steps = [
+    "1.  Be a duck",
+    "2.  Collect pancakes scattered on the map",
+    "3.  Bring them to the carrot to feed it",
+    "4.  Watch the carrot grow",
+    "5.  Enter the treehouse  ( costs 3 pancakes )",
+    "6.  Repeat"
+  ];
+  textSize(15); fill(255);
+  for (var i = 0; i < steps.length; i++) {
+    text(steps[i], 300, 102 + i * 26);
+  }
+
+  // thin divider
+  stroke(255, 255, 255, 70); strokeWeight(1);
+  line(80, 264, 520, 264);
+  noStroke();
+
+  // ── CONTROLS section label ─────────────────────────────────────────
+  textSize(10); fill(255, 255, 255, 110);
+  text("C O N T R O L S", 300, 280);
+
+  // Controls — key left-of-centre, description right-of-centre
+  var controls = [
+    ["[ W ] [ A ] [ S ] [ D ]", "Move"],
+    ["[ Space ]",               "Sprint / dash"],
+    ["[ E ]",                   "Interact  ( carrot / treehouse )"],
+    ["[ Q ]",                   "Quack"]
+  ];
+  textSize(14);
+  for (var j = 0; j < controls.length; j++) {
+    var cy = 302 + j * 28;
+    // key — right-aligned at x=240
+    textAlign("right", "center");
+    fill(200, 200, 255, 220); text(controls[j][0], 248, cy);
+    // separator
+    fill(255, 255, 255, 60); text("—", 270, cy);
+    // description — left-aligned at x=290
+    textAlign("left", "center");
+    fill(255); text(controls[j][1], 290, cy);
+  }
+  textAlign("center", "center"); // restore global default
+
+  // ── Optional note ─────────────────────────────────────────────────
+  stroke(255, 255, 255, 50); strokeWeight(1);
+  line(80, 418, 520, 418);
+  noStroke();
+  textFont("Courier"); textSize(11); fill(255, 255, 255, 100);
+  text("Treehouse, chest & house are bonus content — totally optional", 300, 435);
 }
 
 function draw() {
