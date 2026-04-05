@@ -1334,8 +1334,10 @@ function drawTraveller() {
   ctx.font = 'bold 11px Courier';
   ctx.fillStyle = 'rgba(0,0,0,0.55)';
   ctx.fillRect(traveller.x - 30, traveller.y - TRAV_FH - bob - 17, 60, 14);
+  if (dist(traveller.x, traveller.y, ducks.x, ducks.y)<100) {
   ctx.fillStyle = '#f5e6c0';
   ctx.fillText('Traveller', traveller.x, traveller.y - TRAV_FH - bob - 6);
+  }
   ctx.restore();
 }
 
