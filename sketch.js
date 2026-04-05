@@ -57,6 +57,7 @@ function sendChatToRoom(author, text) {
     type: "chat",
     author: author,
     text: text,
+    senderId: mySocketId,
     payload: {}, // kept so old handlers don't throw
   });
 }
