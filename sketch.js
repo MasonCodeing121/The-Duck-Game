@@ -1271,17 +1271,19 @@ _travSrc.onload = function() {
 };
 _travSrc.src = 'traveller.jpg';
 
-// NPC state – top-right corner of the world square (x≈+820, y≈−820)
+// NPC state – top-left corner of the world square (x≈−820, y≈−820)
 var traveller = {
-  x: 820, y: -820,
-  homeX: 820, homeY: -820,
-  targetX: 820, targetY: -820,
-  d: 90,            // initial direction (facing south)
-  speed: 1.3,
+  x: -800, y: -800,
+  homeX: -800, homeY: -800,
+  targetX: -650, targetY: -800,  // initial target (moving right)
+  d: 0,             // initial direction (facing east)
+  speed: 1.5,
   patrolR: 150,     // patrol radius (world units)
   waitTimer: 0,
-  frame: 3,         // sprite frame index (3 = 90° = South)
-  animTick: 0
+  frame: 0,         // sprite frame index (0 = 0° = East)
+  animTick: 0,
+  moveLeft: -950,   // left boundary for back-and-forth
+  moveRight: -650   // right boundary for back-and-forth
 };
 
 // Reserve one dynamic-obstacle slot for the traveller's body
@@ -1289,19 +1291,25 @@ var traveller = {
 obstacles.push({ x: traveller.x, y: traveller.y, r: 22, _trav: true });
 
 function updateTraveller() {
-  if (traveller.waitTimer > 0) { traveller.waitTimer--; return; }
-
   var dx = traveller.targetX - traveller.x;
   var dy = traveller.targetY - traveller.y;
-  if (dx * dx + dy * dy < 25) {
-    // Reached target – rest, then pick a new spot
-    traveller.waitTimer = Math.round(random(80, 200));
-    var ang = random(0, 360) * Math.PI / 180;
-    var r   = random(30, traveller.patrolR);
-    traveller.targetX = traveller.homeX + Math.cos(ang) * r;
-    traveller.targetY = traveller.homeY + Math.sin(ang) * r;
-  } else {
-    var len = Math.sqrt(dx * dx + dy * dy);
+  
+  // Check if reached target
+  if (Math.abs(dx) < 5 && Math.abs(dy) < 5) {
+    // Switch direction at boundaries
+    if (traveller.targetX >= traveller.moveRight - 10) {
+      // Reached right boundary, go left
+      traveller.targetX = traveller.moveLeft;
+    } else if (traveller.targetX <= traveller.moveLeft + 10) {
+      // Reached left boundary, go right
+      traveller.targetX = traveller.moveRight;
+    }
+    dx = traveller.targetX - traveller.x;
+  }
+  
+  // Move towards target
+  var len = Math.sqrt(dx * dx + dy * dy);
+  if (len > 0.1) {
     traveller.x += (dx / len) * traveller.speed;
     traveller.y += (dy / len) * traveller.speed;
     traveller.d = atan2(dy, dx);           // degrees, 0=E convention
