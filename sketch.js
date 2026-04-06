@@ -1560,6 +1560,9 @@ function game() {
     }
   }
 
+  // Draw traveller
+  drawTraveller();
+
   // Draw random trees in Y-order AFTER ducks so trees appear in front
   if (_treeReady) {
     var _st = trees.slice().sort(function (a, b) {
@@ -1687,6 +1690,7 @@ function game() {
   }
   honk();
   emitMove();
+  updateTraveller();
 
   noStroke();
   fill(255, 153, 0);
